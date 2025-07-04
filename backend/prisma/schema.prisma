@@ -18,13 +18,15 @@ model User {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  price       Float
-  image       String
-  description String
-  category    String
-  stock       Int
+  id              Int      @id @default(autoincrement())
+  name            String
+  price           Float
+  image           String
+  discountedPrice Float
+  rating          Float
+  description     String
+  category        String
+  cartItems       CartItem[]
 }
 
 model Cart {
