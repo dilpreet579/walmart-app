@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+
+# Env
+.env
+.env.*
+
+# Prisma
+prisma/dev.db
+prisma/*.sqlite
+
+# Logs
+logs
+*.log
