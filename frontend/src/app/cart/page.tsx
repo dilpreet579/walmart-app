@@ -10,6 +10,12 @@ import { useRouter } from 'next/navigation'
 export default function CartPage() {
   const router = useRouter()
 
+  // Check login status on mount
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean | null>(null)
+  React.useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('jwt_token'))
+  }, [])
+
   const items = useCartStore(state => state.items)
   const removeFromCart = useCartStore(state => state.removeFromCart)
   const updateQuantity = useCartStore(state => state.updateQuantity)
@@ -20,8 +26,17 @@ export default function CartPage() {
   const fetchCart = useCartStore(state => state.fetchCart)
 
   React.useEffect(() => {
-    fetchCart()
-  }, [])
+    if (isLoggedIn) fetchCart()
+  }, [isLoggedIn])
+
+  if (isLoggedIn === false) {
+    return (
+      <div className="container-wrapper section text-center">
+        <h2 className="mb-4">Please log in to view your cart</h2>
+        <Link href="/login" className="btn-primary inline-block">Login</Link>
+      </div>
+    )
+  }
 
   if (loading) {
     return <div className="container-wrapper section text-center">Loading cart...</div>
