@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useCart } from '../../contexts/CartContext'
+import { useCartStore } from '../../store/cartStore'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -9,8 +9,26 @@ import { useRouter } from 'next/navigation'
 
 export default function CartPage() {
   const router = useRouter()
-  const { items, removeFromCart, updateQuantity, total, clearCart } = useCart()
 
+  const items = useCartStore(state => state.items)
+  const removeFromCart = useCartStore(state => state.removeFromCart)
+  const updateQuantity = useCartStore(state => state.updateQuantity)
+  const total = useCartStore(state => state.total)
+  const clearCart = useCartStore(state => state.clearCart)
+  const loading = useCartStore(state => state.loading)
+  const error = useCartStore(state => state.error)
+  const fetchCart = useCartStore(state => state.fetchCart)
+
+  React.useEffect(() => {
+    fetchCart()
+  }, [])
+
+  if (loading) {
+    return <div className="container-wrapper section text-center">Loading cart...</div>
+  }
+  if (error) {
+    return <div className="container-wrapper section text-center text-red-600">{error}</div>
+  }
   if (items.length === 0) {
     return (
       <div className="container-wrapper section">
@@ -31,7 +49,7 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          {items.map(({ product, quantity }) => (
+          {items.map(({product, quantity}: { product: import('../../store/cartStore').Product, quantity: number }) => (
             <div key={product.id} className="flex items-center border-b py-4">
               <div className="flex-shrink-0 w-24 h-24 relative">
                 <Image

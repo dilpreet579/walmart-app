@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useCart } from '../../contexts/CartContext'
+import { useCartStore } from '../../store/cartStore'
+import { shallow } from 'zustand/shallow'
 
 interface PaymentDetails {
   cardNumber: string
@@ -13,8 +14,17 @@ interface PaymentDetails {
 
 export default function Checkout() {
   const router = useRouter()
-  const { total, clearCart } = useCart()
+  const { total, clearCart, items } = useCartStore((state) => ({
+    total: state.total,
+    clearCart: state.clearCart,
+    items: state.items
+  })) as {
+    total: number;
+    clearCart: () => Promise<void>;
+    items: import('../../store/cartStore').CartItem[];
+  }
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>({
     cardNumber: '',
     expiryDate: '',
@@ -33,14 +43,28 @@ export default function Checkout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
-    // Simulate payment processing
+    setError(null)
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Call real backend payment API
+      const jwt = localStorage.getItem('jwt_token')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'}/payment/intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`
+        },
+        body: JSON.stringify({
+          amount: Math.round(total * 100), // Stripe expects cents
+          currency: 'usd'
+        })
+      })
+      if (!res.ok) throw new Error('Payment failed')
+      const data = await res.json()
+      // In real Stripe integration, you would use Stripe.js to confirm the payment with clientSecret here
       clearCart()
       router.push('/payment-success')
-    } catch (error) {
-      console.error('Payment failed:', error)
+    } catch (error: any) {
+      setError(error.message || 'Payment failed')
       setLoading(false)
     }
   }
@@ -48,6 +72,7 @@ export default function Checkout() {
   return (
     <div className="container-wrapper section">
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+      {error && <div className="text-red-600 mb-4">{error}</div>}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
