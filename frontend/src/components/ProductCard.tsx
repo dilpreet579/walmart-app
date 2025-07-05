@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { StarIcon } from '@heroicons/react/24/solid'
-import { useCart } from '../contexts/CartContext'
+import { useCartStore } from '../store/cartStore'
 import Image from 'next/image'
 
 interface Product {
@@ -21,33 +21,27 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart, items, updateQuantity } = useCart()
+  const items = useCartStore(state => state.items)
+  const addToCart = useCartStore(state => state.addToCart)
+  const updateQuantity = useCartStore(state => state.updateQuantity)
+
   const { name, price, discountedPrice, image, rating, description } = product
   const [imageError, setImageError] = useState(false)
 
-  const cartItem = items.find(item => item.product.id === product.id)
+  const cartItem = useMemo(
+    () => items.find(item => item.product.id === product.id),
+    [items, product.id]
+  )
 
-  const handleAddToCart = () => {
-    addToCart(product)
-  }
-
-  const handleIncrement = () => {
-    if (cartItem) {
-      updateQuantity(product.id, cartItem.quantity + 1)
-    }
-  }
-
+  const handleAddToCart = () => addToCart(product.id, 1)
+  const handleIncrement = () => cartItem && updateQuantity(product.id, cartItem.quantity + 1)
   const handleDecrement = () => {
-    if (cartItem && cartItem.quantity > 1) {
-      updateQuantity(product.id, cartItem.quantity - 1)
-    } else if (cartItem) {
-      updateQuantity(product.id, 0) // This will remove the item
-    }
+    if (!cartItem) return
+    if (cartItem.quantity > 1) updateQuantity(product.id, cartItem.quantity - 1)
+    else updateQuantity(product.id, 0)
   }
 
-  const handleImageError = () => {
-    setImageError(true)
-  }
+  const handleImageError = () => setImageError(true)
 
   return (
     <div className="product-card group relative">

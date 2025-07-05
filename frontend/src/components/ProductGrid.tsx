@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import ProductCard from './ProductCard'
-import axios from 'axios'
+import { useProductStore } from '../store/productStore'
 
 interface Product {
   id: number
@@ -19,23 +19,11 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ searchQuery }: ProductGridProps) {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { products, loading, error, fetchProducts } = useProductStore()
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get<Product[]>('/api/products')
-        setProducts(response.data)
-        setLoading(false)
-      } catch (err) {
-        setError('Failed to load products')
-        setLoading(false)
-      }
-    }
-
     fetchProducts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (loading) {
