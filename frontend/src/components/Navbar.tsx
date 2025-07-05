@@ -1,28 +1,34 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { useCart } from '../contexts/CartContext'
+import { useCartStore } from '../store/cartStore'
+import { shallow } from 'zustand/shallow'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
-  const { itemCount, total } = useCart()
   const router = useRouter()
 
+  // Simpler selector approach
+  const itemCount = useCartStore(state => state.itemCount)
+  const total = useCartStore(state => state.total)
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchQuery(value)
-    // Update URL search params
-    const params = new URLSearchParams()
-    if (value) params.set('search', value)
-    router.push(`/?${params.toString()}`)
+    setSearchQuery(e.target.value)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-  }
+  // Debounce router push when searchQuery changes
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams()
+      if (searchQuery) params.set('search', searchQuery)
+      router.push(`/?${params.toString()}`)
+    }, 400) // 400ms debounce
+
+    return () => clearTimeout(timeout)
+  }, [searchQuery, router])
 
   return (
     <nav className="bg-walmart-blue sticky top-0 z-50">
@@ -40,29 +46,17 @@ export default function Navbar() {
 
           {/* Categories */}
           <div className="hidden md:flex space-x-4 ml-4">
-            <Link href="/category/electronics" className="text-white hover:text-gray-200">
-              Electronics
-            </Link>
-            <Link href="/category/appliances" className="text-white hover:text-gray-200">
-              Appliances
-            </Link>
-            <Link href="/category/footwear" className="text-white hover:text-gray-200">
-              Footwear
-            </Link>
-            <Link href="/category/toys" className="text-white hover:text-gray-200">
-              Toys
-            </Link>
-            <Link href="/category/sports" className="text-white hover:text-gray-200">
-              Sports
-            </Link>
-            <Link href="/category/baby" className="text-white hover:text-gray-200">
-              Baby
-            </Link>
+            <Link href="/category/electronics" className="text-white hover:text-gray-200">Electronics</Link>
+            <Link href="/category/appliances" className="text-white hover:text-gray-200">Appliances</Link>
+            <Link href="/category/footwear" className="text-white hover:text-gray-200">Footwear</Link>
+            <Link href="/category/toys" className="text-white hover:text-gray-200">Toys</Link>
+            <Link href="/category/sports" className="text-white hover:text-gray-200">Sports</Link>
+            <Link href="/category/baby" className="text-white hover:text-gray-200">Baby</Link>
           </div>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div className="flex-1 max-w-2xl mx-8">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <input
                   type="text"
@@ -71,14 +65,12 @@ export default function Navbar() {
                   className="input-search"
                   placeholder="Search everything at Walmart online and in store"
                 />
-                <MagnifyingGlassIcon
-                  className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                />
+                <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
             </form>
           </div>
 
-          {/* Cart Icon */}
+          {/* Cart */}
           <div className="flex items-center">
             <Link href="/cart" className="relative group">
               <button className="btn text-white p-2 rounded-full hover:bg-blue-700">

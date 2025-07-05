@@ -1,8 +1,6 @@
 import './globals.css'
-import { CartProvider } from '../contexts/CartContext'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
 
+import ClientWrapper from '../components/ClientWrapper'
 
 export const metadata = {
   title: 'Walmart Clone - Save Money. Live Better.',
@@ -17,15 +15,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CartProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </CartProvider>
+        <div className="min-h-screen flex flex-col">
+          <ClientWrapper>
+            {children}
+          </ClientWrapper>
+        </div>
       </body>
     </html>
   )
