@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useCartStore } from '../../store/cartStore'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
@@ -10,11 +10,7 @@ import { useRouter } from 'next/navigation'
 export default function CartPage() {
   const router = useRouter()
 
-  // Check login status on mount
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean | null>(null)
-  React.useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem('jwt_token'))
-  }, [])
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
 
   const items = useCartStore(state => state.items)
   const removeFromCart = useCartStore(state => state.removeFromCart)
@@ -25,9 +21,13 @@ export default function CartPage() {
   const error = useCartStore(state => state.error)
   const fetchCart = useCartStore(state => state.fetchCart)
 
-  React.useEffect(() => {
-    if (isLoggedIn) fetchCart()
-  }, [isLoggedIn])
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token')
+    setIsLoggedIn(!!token)
+    if (token) {
+      fetchCart()
+    }
+  }, [fetchCart])
 
   if (isLoggedIn === false) {
     return (
@@ -41,9 +41,11 @@ export default function CartPage() {
   if (loading) {
     return <div className="container-wrapper section text-center">Loading cart...</div>
   }
+
   if (error) {
     return <div className="container-wrapper section text-center text-red-600">{error}</div>
   }
+
   if (items.length === 0) {
     return (
       <div className="container-wrapper section">
@@ -64,23 +66,23 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          {items.map(({product, quantity}: { product: import('../../store/cartStore').Product, quantity: number }) => (
-            <div key={product.id} className="flex items-center border-b py-4">
+          {items.map(({ productId, quantity }) => (
+            <div key={productId} className="flex items-center border-b py-4">
+              {/* Replace this with actual product fetching if needed */}
               <div className="flex-shrink-0 w-24 h-24 relative">
                 <Image
-                  src={product.image}
-                  alt={product.name}
+                  src={'/images/placeholder.jpg'}
+                  alt={'Product'}
                   fill
                   className="object-cover rounded"
                 />
               </div>
               <div className="ml-4 flex-1">
-                <h3 className="text-lg font-medium">{product.name}</h3>
-                <p className="text-sm text-gray-600">{product.description}</p>
+                <h3 className="text-lg font-medium">Product #{productId}</h3>
                 <div className="mt-2 flex items-center">
                   <select
                     value={quantity}
-                    onChange={(e) => updateQuantity(product.id, parseInt(e.target.value))}
+                    onChange={(e) => updateQuantity(productId, parseInt(e.target.value))}
                     className="rounded border border-gray-300 py-1 px-2 mr-4"
                   >
                     {[...Array(10)].map((_, i) => (
@@ -90,10 +92,10 @@ export default function CartPage() {
                     ))}
                   </select>
                   <span className="text-walmart-blue font-semibold">
-                    ${(product.price * quantity).toFixed(2)}
+                    Qty: {quantity}
                   </span>
                   <button
-                    onClick={() => removeFromCart(product.id)}
+                    onClick={() => removeFromCart(productId)}
                     className="btn-danger ml-4"
                   >
                     <TrashIcon className="h-5 w-5" />

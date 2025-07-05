@@ -28,6 +28,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
   fetchProducts: async () => {
     set({ loading: true, error: null })
     try {
+      //intentionally using fetch instead of apiFetch
       const res = await fetch(`${API_BASE}/products`)
       if (!res.ok) throw new Error('Failed to fetch products')
       const data = await res.json()

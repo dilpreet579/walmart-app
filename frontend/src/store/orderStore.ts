@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { apiFetch } from '../utils/api'
 
 export interface Order {
   id: number
@@ -26,11 +27,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   fetchOrders: async () => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/orders`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      const res = await apiFetch(`${API_BASE}/orders`)
       if (!res.ok) throw new Error('Failed to fetch orders')
       const data = await res.json()
       set({ orders: data.orders, loading: false })
@@ -42,20 +39,14 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   placeOrder: async (items) => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/orders`, {
+      const res = await apiFetch(`${API_BASE}/orders`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items })
       })
       if (!res.ok) throw new Error('Failed to place order')
-      await set({ loading: false })
-      // Optionally refetch orders
-      await (get().fetchOrders?.() ?? Promise.resolve())
+      await get().fetchOrders()
+      set({ loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }

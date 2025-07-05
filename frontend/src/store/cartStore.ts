@@ -1,18 +1,8 @@
 import { create } from 'zustand'
-import { shallow } from 'zustand/shallow'
+import { apiFetch } from '../utils/api'
 
-export type Product = {
-  id: number
-  name: string
-  price: number
-  image: string
-  rating: number
-  description: string
-  category: string
-}
-
-export type CartItem = {
-  product: Product
+export interface CartItem {
+  productId: number
   quantity: number
 }
 
@@ -41,18 +31,10 @@ export const useCartStore = create<CartState>((set, get) => ({
   fetchCart: async () => {
     set({ loading: true, error: null })
     try {
-      const res = await fetch(`${API_BASE}/cart`, {
-        credentials: 'include',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` }
-      })
+      const res = await apiFetch(`${API_BASE}/cart`)
       if (!res.ok) throw new Error('Failed to fetch cart')
       const data = await res.json()
-      set({
-        items: data.items,
-        total: data.total,
-        itemCount: data.itemCount,
-        loading: false
-      })
+      set({ items: data.items, total: data.total, itemCount: data.itemCount, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -61,12 +43,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   addToCart: async (productId, quantity = 1) => {
     set({ loading: true, error: null })
     try {
-      const res = await fetch(`${API_BASE}/cart`, {
+      const res = await apiFetch(`${API_BASE}/cart`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, quantity })
       })
       if (!res.ok) throw new Error('Failed to add to cart')
@@ -79,12 +58,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   updateQuantity: async (productId, quantity) => {
     set({ loading: true, error: null })
     try {
-      const res = await fetch(`${API_BASE}/cart`, {
+      const res = await apiFetch(`${API_BASE}/cart`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, quantity })
       })
       if (!res.ok) throw new Error('Failed to update cart item')
@@ -97,12 +73,8 @@ export const useCartStore = create<CartState>((set, get) => ({
   removeFromCart: async (productId) => {
     set({ loading: true, error: null })
     try {
-      const res = await fetch(`${API_BASE}/cart/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-        }
-      })
+      const res = await apiFetch(`${API_BASE}/cart/${productId}`, {
+        method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to remove from cart')
       await get().fetchCart()
     } catch (e: any) {
@@ -113,18 +85,12 @@ export const useCartStore = create<CartState>((set, get) => ({
   clearCart: async () => {
     set({ loading: true, error: null })
     try {
-      const res = await fetch(`${API_BASE}/cart`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-        }
-      })
+      const res = await apiFetch(`${API_BASE}/cart`, {
+        method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to clear cart')
       await get().fetchCart()
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
-  }
+  },
 }))
-
-// Usage tip: useCartStore(selector, shallow) to avoid unnecessary re-renders

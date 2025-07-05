@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { apiFetch } from '../utils/api'
 
 export interface User {
   id: number
@@ -27,6 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     set({ loading: true, error: null })
     try {
+      //intentionally using fetch instead of apiFetch
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,6 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (name, email, password) => {
     set({ loading: true, error: null })
     try {
+      //intentionally using fetch instead of apiFetch
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,11 +69,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   fetchUser: async () => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/auth/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      //here apiFetch is required to get the user data
+      const res = await apiFetch(`${API_BASE}/auth/me`)
       if (!res.ok) throw new Error('Failed to fetch user')
       const data = await res.json()
       set({ user: data.user, loading: false })

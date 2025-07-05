@@ -29,7 +29,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [imageError, setImageError] = useState(false)
 
   const cartItem = useMemo(
-    () => items.find(item => item.product.id === product.id),
+    () => items.find(item => item.productId === product.id),
     [items, product.id]
   )
 

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { apiFetch } from '../utils/api'
 
 export interface Address {
   id: number
@@ -31,11 +32,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   fetchAddresses: async () => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/addresses`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
+      const res = await apiFetch(`${API_BASE}/addresses`)
       if (!res.ok) throw new Error('Failed to fetch addresses')
       const data = await res.json()
       set({ addresses: data.addresses, loading: false })
@@ -47,19 +44,14 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   addAddress: async (address) => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/addresses`, {
+      const res = await apiFetch(`${API_BASE}/addresses`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(address)
       })
       if (!res.ok) throw new Error('Failed to add address')
-      await set({ loading: false })
       await get().fetchAddresses()
+      set({ loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -68,19 +60,14 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   updateAddress: async (id, address) => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/addresses/${id}`, {
+      const res = await apiFetch(`${API_BASE}/addresses/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(address)
       })
       if (!res.ok) throw new Error('Failed to update address')
-      await set({ loading: false })
       await get().fetchAddresses()
+      set({ loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -89,17 +76,11 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   deleteAddress: async (id) => {
     set({ loading: true, error: null })
     try {
-      const token = localStorage.getItem('jwt_token')
-      if (!token) throw new Error('Not logged in')
-      const res = await fetch(`${API_BASE}/addresses/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      const res = await apiFetch(`${API_BASE}/addresses/${id}`, {
+        method: 'DELETE' })
       if (!res.ok) throw new Error('Failed to delete address')
-      await set({ loading: false })
       await get().fetchAddresses()
+      set({ loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
