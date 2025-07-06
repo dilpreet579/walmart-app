@@ -43,7 +43,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   addToCart: async (productId, quantity = 1) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/cart`, {
+      const res = await apiFetch(`${API_BASE}/cart/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, quantity })
@@ -58,7 +58,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   updateQuantity: async (productId, quantity) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/cart`, {
+      const res = await apiFetch(`${API_BASE}/cart/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, quantity })
@@ -73,8 +73,11 @@ export const useCartStore = create<CartState>((set, get) => ({
   removeFromCart: async (productId) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/cart/${productId}`, {
-        method: 'DELETE' })
+      const res = await apiFetch(`${API_BASE}/cart/remove`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId })
+      })
       if (!res.ok) throw new Error('Failed to remove from cart')
       await get().fetchCart()
     } catch (e: any) {
@@ -85,8 +88,9 @@ export const useCartStore = create<CartState>((set, get) => ({
   clearCart: async () => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/cart`, {
-        method: 'DELETE' })
+      const res = await apiFetch(`${API_BASE}/cart/clear`, {
+        method: 'DELETE'
+      })
       if (!res.ok) throw new Error('Failed to clear cart')
       await get().fetchCart()
     } catch (e: any) {
