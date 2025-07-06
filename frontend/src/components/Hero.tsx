@@ -38,7 +38,7 @@ export default function Hero() {
               {categories.map((category, index) => (
                 <Link href={category.href} key={index}
                   className="group flex flex-col items-center p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all">
-                  <div className="h-12 w-12 text-white mb-2">
+                  <div className="h-16 w-16 text-white mb-2">
                     <img 
                       src={category.icon} 
                       alt={category.name}
@@ -65,18 +65,18 @@ const categories = [
     href: '/category/electronics',
   },
   {
-    name: 'Groceries',
-    icon: '/icons/groceries.png',
-    href: '/category/groceries',
+    name: 'Sports',
+    icon: '/images/yoga-mat.jpg',
+    href: '/category/sports',
   },
   {
-    name: 'Fashion',
-    icon: '/icons/fashion.png',
-    href: '/category/fashion',
+    name: 'Toys',
+    icon: '/images/board-games.jpg',
+    href: '/category/toys',
   },
   {
-    name: 'Home & Garden',
-    icon: '/icons/home.png',
-    href: '/category/home-garden',
+    name: 'Footwear',
+    icon: '/images/running-shoes.jpg',
+    href: '/category/footwear',
   },
 ]

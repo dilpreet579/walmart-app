@@ -4,10 +4,12 @@ import Link from 'next/link'
 const footerLinks = {
   shop: [
     { name: 'Deals', href: '/deals' },
-    { name: 'Electronics', href: '/electronics' },
-    { name: 'Groceries', href: '/groceries' },
-    { name: 'Home & Garden', href: '/home-garden' },
-    { name: 'Fashion', href: '/fashion' },
+    { name: 'Electronics', href: '/category/electronics' },
+    { name: 'Appliances', href: '/category/appliances' },
+    { name: 'Footwear', href: '/category/footwear' },
+    { name: 'Toys', href: '/category/toys' },
+    { name: 'Sports', href: '/category/sports' },
+    { name: 'Baby', href: '/category/baby' },
   ],
   help: [
     { name: 'Help Center', href: '/help' },
