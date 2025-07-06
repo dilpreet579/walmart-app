@@ -24,6 +24,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const items = useCartStore(state => state.items)
   const addToCart = useCartStore(state => state.addToCart)
   const updateQuantity = useCartStore(state => state.updateQuantity)
+  const removeFromCart = useCartStore(state => state.removeFromCart)
 
   const { name, price, discountedPrice, image, rating, description } = product
   const [imageError, setImageError] = useState(false)
@@ -33,12 +34,23 @@ export default function ProductCard({ product }: ProductCardProps) {
     [items, product.id]
   )
 
-  const handleAddToCart = () => addToCart(product.id, 1)
-  const handleIncrement = () => cartItem && updateQuantity(product.id, cartItem.quantity + 1)
-  const handleDecrement = () => {
+  const handleAddToCart = async () => {
+    await addToCart(product.id, 1)
+  }
+
+  const handleIncrement = async () => {
+    if (cartItem) {
+      await updateQuantity(product.id, cartItem.quantity + 1)
+    }
+  }
+
+  const handleDecrement = async () => {
     if (!cartItem) return
-    if (cartItem.quantity > 1) updateQuantity(product.id, cartItem.quantity - 1)
-    else updateQuantity(product.id, 0)
+    if (cartItem.quantity > 1) {
+      await updateQuantity(product.id, cartItem.quantity - 1)
+    } else {
+      await removeFromCart(product.id)
+    }
   }
 
   const handleImageError = () => setImageError(true)

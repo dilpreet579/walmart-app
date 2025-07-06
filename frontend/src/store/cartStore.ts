@@ -1,9 +1,27 @@
 import { create } from 'zustand'
 import { apiFetch } from '../utils/api'
 
+export interface Product {
+  id: number
+  name: string
+  price: number
+  discountedPrice?: number
+  image: string
+  rating: number
+  description: string
+  category: string
+}
+
 export interface CartItem {
   productId: number
   quantity: number
+  product?: Product
+}
+
+interface CartApiItem {
+  productId: number
+  quantity: number
+  product: Product
 }
 
 export interface CartState {
@@ -33,8 +51,26 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const res = await apiFetch(`${API_BASE}/cart`)
       if (!res.ok) throw new Error('Failed to fetch cart')
-      const data = await res.json()
-      set({ items: data.items, total: data.total, itemCount: data.itemCount, loading: false })
+      const data: { items: CartApiItem[] } = await res.json()
+
+      // Calculate totals
+      const total = data.items.reduce((sum, item) => {
+        const price = item.product.discountedPrice ?? item.product.price
+        return sum + price * item.quantity
+      }, 0)
+
+      const itemCount = data.items.reduce((sum, item) => sum + item.quantity, 0)
+
+      set({
+        items: data.items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          product: item.product,
+        })),
+        total,
+        itemCount,
+        loading: false,
+      })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }

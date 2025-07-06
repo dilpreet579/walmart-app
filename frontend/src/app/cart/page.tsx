@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useCartStore } from '../../store/cartStore'
+import { useCartStore, CartItem } from '../../store/cartStore'
 import { useAuthStore } from '../../store/authStore'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
@@ -14,7 +14,7 @@ export default function CartPage() {
   const isLoggedIn = useAuthStore(state => state.isLoggedIn)
   const checkAuthStatus = useAuthStore(state => state.checkAuthStatus)
 
-  const items = useCartStore(state => state.items)
+  const items: Array<CartItem & { product?: { image: string; name: string; price: number; discountedPrice?: number } }> = useCartStore(state => state.items)
   const removeFromCart = useCartStore(state => state.removeFromCart)
   const updateQuantity = useCartStore(state => state.updateQuantity)
   const total = useCartStore(state => state.total)
@@ -67,23 +67,22 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          {items.map(({ productId, quantity }) => (
-            <div key={productId} className="flex items-center border-b py-4">
-              {/* Replace this with actual product fetching if needed */}
+          {items.map((item) => (
+            <div key={item.productId} className="flex items-center border-b py-4">
               <div className="flex-shrink-0 w-24 h-24 relative">
                 <Image
-                  src={'/images/placeholder.jpg'}
-                  alt={'Product'}
+                  src={item.product?.image || '/images/placeholder.jpg'}
+                  alt={item.product?.name || 'Product'}
                   fill
                   className="object-cover rounded"
                 />
               </div>
               <div className="ml-4 flex-1">
-                <h3 className="text-lg font-medium">Product #{productId}</h3>
+                <h3 className="text-lg font-medium">{item.product?.name || `Product #${item.productId}`}</h3>
                 <div className="mt-2 flex items-center">
                   <select
-                    value={quantity}
-                    onChange={(e) => updateQuantity(productId, parseInt(e.target.value))}
+                    value={item.quantity}
+                    onChange={(e) => updateQuantity(item.productId, parseInt(e.target.value))}
                     className="rounded border border-gray-300 py-1 px-2 mr-4"
                   >
                     {[...Array(10)].map((_, i) => (
@@ -93,10 +92,10 @@ export default function CartPage() {
                     ))}
                   </select>
                   <span className="text-walmart-blue font-semibold">
-                    Qty: {quantity}
+                    ${(item.product ? (item.product.discountedPrice ?? item.product.price) * item.quantity : 0).toFixed(2)}
                   </span>
                   <button
-                    onClick={() => removeFromCart(productId)}
+                    onClick={() => removeFromCart(item.productId)}
                     className="btn-danger ml-4"
                   >
                     <TrashIcon className="h-5 w-5" />
