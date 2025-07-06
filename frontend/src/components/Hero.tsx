@@ -6,7 +6,7 @@ export default function Hero() {
     <div className="relative bg-walmart-blue overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative z-10 py-8 sm:py-16 md:py-20 lg:py-24 bg-center bg-no-repeat bg-cover" style={{
-          backgroundImage: 'linear-gradient(rgba(0, 113, 220, 0.8), rgba(0, 113, 220, 0.8)), url(/images/banner.jpg)'
+          backgroundImage: 'linear-gradient(rgba(0, 113, 220, 0.8), rgba(0, 113, 220, 0.8))'
         }}>
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
             <div className="sm:text-center lg:text-left">
