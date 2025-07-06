@@ -3,17 +3,31 @@
 import React, { useState, useEffect } from 'react'
 import { ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useCartStore } from '../store/cartStore'
-import { shallow } from 'zustand/shallow'
+import { useAuthStore } from '../store/authStore'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
-  const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Simpler selector approach
   const itemCount = useCartStore(state => state.itemCount)
   const total = useCartStore(state => state.total)
+
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn)
+  const logout = useAuthStore(state => state.logout)
+  const checkAuthStatus = useAuthStore(state => state.checkAuthStatus)
+
+  useEffect(() => {
+    checkAuthStatus()
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'jwt_token') {
+        checkAuthStatus()
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [checkAuthStatus])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
@@ -88,6 +102,22 @@ export default function Navbar() {
                 </div>
               )}
             </Link>
+            {isLoggedIn ? (
+              <button
+                className="btn btn-secondary text-white ml-2"
+                onClick={() => {
+                  logout()
+                  router.push('/login')
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <>
+                <Link href="/login" className="text-white hover:underline">Login</Link>
+                <Link href="/register" className="text-white hover:underline ml-2">Register</Link>
+              </>
+            )}
           </div>
         </div>
       </div>

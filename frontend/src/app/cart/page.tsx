@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useCartStore } from '../../store/cartStore'
+import { useAuthStore } from '../../store/authStore'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,7 +11,8 @@ import { useRouter } from 'next/navigation'
 export default function CartPage() {
   const router = useRouter()
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn)
+  const checkAuthStatus = useAuthStore(state => state.checkAuthStatus)
 
   const items = useCartStore(state => state.items)
   const removeFromCart = useCartStore(state => state.removeFromCart)
@@ -22,14 +24,13 @@ export default function CartPage() {
   const fetchCart = useCartStore(state => state.fetchCart)
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt_token')
-    setIsLoggedIn(!!token)
-    if (token) {
+    checkAuthStatus()
+    if (localStorage.getItem('jwt_token')) {
       fetchCart()
     }
-  }, [fetchCart])
+  }, [checkAuthStatus, fetchCart])
 
-  if (isLoggedIn === false) {
+  if (!isLoggedIn) {
     return (
       <div className="container-wrapper section text-center">
         <h2 className="mb-4">Please log in to view your cart</h2>

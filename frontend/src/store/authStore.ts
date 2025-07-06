@@ -12,10 +12,12 @@ export interface AuthState {
   user: User | null
   loading: boolean
   error: string | null
+  isLoggedIn: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   register: (name: string, email: string, password: string) => Promise<void>
   fetchUser: () => Promise<void>
+  checkAuthStatus: () => void
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'
@@ -24,6 +26,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: false,
   error: null,
+  isLoggedIn: !!localStorage.getItem('jwt_token'),
 
   login: async (email, password) => {
     set({ loading: true, error: null })
@@ -37,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) throw new Error('Invalid credentials')
       const data = await res.json()
       localStorage.setItem('jwt_token', data.token)
-      set({ user: data.user, loading: false })
+      set({ user: data.user, isLoggedIn: true, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -45,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     localStorage.removeItem('jwt_token')
-    set({ user: null })
+    set({ user: null, isLoggedIn: false })
   },
 
   register: async (name, email, password) => {
@@ -60,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) throw new Error('Registration failed')
       const data = await res.json()
       localStorage.setItem('jwt_token', data.token)
-      set({ user: data.user, loading: false })
+      set({ user: data.user, isLoggedIn: true, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -73,9 +76,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await apiFetch(`${API_BASE}/auth/me`)
       if (!res.ok) throw new Error('Failed to fetch user')
       const data = await res.json()
-      set({ user: data.user, loading: false })
+      set({ user: data.user, isLoggedIn: true, loading: false })
     } catch (e: any) {
-      set({ error: e.message, loading: false })
+      set({ error: e.message, isLoggedIn: false, loading: false })
     }
+  },
+
+  checkAuthStatus: () => {
+    const token = localStorage.getItem('jwt_token')
+    set({ isLoggedIn: !!token })
   },
 }))
