@@ -2,26 +2,21 @@ import React from 'react'
 import CategoryPage from '../../../components/CategoryPage'
 
 interface CategoryPageProps {
-  params: Promise<{
+  params: {
     slug: string
-  }>
+  }
 }
 
-export default async function Category({ params }: CategoryPageProps) {
-  const resolvedParams = await params
-  
-  // Convert slug to proper category name
+export default function Category({ params }: CategoryPageProps) {
   const categoryMap: { [key: string]: string } = {
-    'electronics': 'Electronics',
-    'appliances': 'Appliances',
-    'footwear': 'Footwear',
-    'toys': 'Toys',
-    'sports': 'Sports',
-    'baby': 'Baby'
+    electronics: 'Electronics',
+    appliances: 'Appliances',
+    footwear: 'Footwear',
+    toys: 'Toys',
+    sports: 'Sports',
+    baby: 'Baby',
   }
-  
-  const category = categoryMap[resolvedParams.slug] || resolvedParams.slug
-
+  const category = categoryMap[params.slug] || params.slug
   return <CategoryPage category={category} />
 }
 
@@ -32,6 +27,6 @@ export function generateStaticParams() {
     { slug: 'footwear' },
     { slug: 'toys' },
     { slug: 'sports' },
-    { slug: 'baby' }
+    { slug: 'baby' },
   ]
 }
