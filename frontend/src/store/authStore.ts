@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: false,
   error: null,
-  isLoggedIn: !!localStorage.getItem('jwt_token'),
+  isLoggedIn: false,
 
   login: async (email, password) => {
     set({ loading: true, error: null })
@@ -83,7 +83,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuthStatus: () => {
-    const token = localStorage.getItem('jwt_token')
-    set({ isLoggedIn: !!token })
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('jwt_token')
+      set({ isLoggedIn: !!token })
+    }
   },
 }))
