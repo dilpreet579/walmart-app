@@ -36,6 +36,18 @@ function Checkout() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Add address form state
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [addressForm, setAddressForm] = useState({
+    line1: '',
+    city: '',
+    zip: '',
+    country: '',
+    phone: ''
+  })
+  const [addAddressLoading, setAddAddressLoading] = useState(false)
+  const [addAddressError, setAddAddressError] = useState<string | null>(null)
+
   useEffect(() => {
     fetchAddresses()
   }, [])
@@ -127,7 +139,76 @@ function Checkout() {
                 {`${addr.line1}, ${addr.city}, ${addr.country}`}
               </option>
             ))}
-          </select> 
+          </select>
+          <button type="button" className="mt-2 text-blue-600 underline text-sm" onClick={() => setShowAddForm(v => !v)}>
+            {showAddForm ? 'Cancel' : 'Add New Address'}
+          </button>
+          {showAddForm && (
+            <div className="mt-4 bg-gray-50 p-4 rounded border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  className="input"
+                  placeholder="Address Line 1"
+                  value={addressForm.line1}
+                  onChange={e => setAddressForm(f => ({ ...f, line1: e.target.value }))}
+                  required
+                />
+                <input
+                  className="input"
+                  placeholder="City"
+                  value={addressForm.city}
+                  onChange={e => setAddressForm(f => ({ ...f, city: e.target.value }))}
+                  required
+                />
+                <input
+                  className="input"
+                  placeholder="Zip Code"
+                  value={addressForm.zip}
+                  onChange={e => setAddressForm(f => ({ ...f, zip: e.target.value }))}
+                  required
+                />
+                <input
+                  className="input"
+                  placeholder="Country"
+                  value={addressForm.country}
+                  onChange={e => setAddressForm(f => ({ ...f, country: e.target.value }))}
+                  required
+                />
+                <input
+                  className="input"
+                  placeholder="Phone"
+                  value={addressForm.phone}
+                  onChange={e => setAddressForm(f => ({ ...f, phone: e.target.value }))}
+                  required
+                />
+              </div>
+              {addAddressError && <div className="text-red-600 text-sm mt-2">{addAddressError}</div>}
+              <button
+                type="button"
+                className="btn-primary mt-4"
+                disabled={addAddressLoading}
+                onClick={async () => {
+                  setAddAddressLoading(true)
+                  setAddAddressError(null)
+                  try {
+                    await useAddressStore.getState().addAddress(addressForm)
+                    await fetchAddresses()
+                    // Find the latest address (assuming backend returns new at end)
+                    const latest = useAddressStore.getState().addresses.slice(-1)[0]
+                    setSelectedAddressId(latest?.id)
+                    setShowAddForm(false)
+                    setAddressForm({ line1: '', city: '', zip: '', country: '', phone: '' })
+                  } catch (err: any) {
+                    setAddAddressError(err.message || 'Failed to add address')
+                  } finally {
+                    setAddAddressLoading(false)
+                  }
+                }}
+              >
+                {addAddressLoading ? 'Adding...' : 'Save Address'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Card */}
