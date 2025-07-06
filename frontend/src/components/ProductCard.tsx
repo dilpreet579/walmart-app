@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
+import Link from 'next/link'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { useCartStore } from '../store/cartStore'
 import Image from 'next/image'
@@ -58,16 +59,22 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="product-card group relative">
       <div className="product-image-container">
-        <Image
-          src={imageError ? '/images/placeholder.jpg' : image}
-          alt={name}
-          fill
-          className="product-image"
-          onError={handleImageError}
-        />
+        <Link href={`/product/${product.id}`}>
+          <Image
+            src={imageError ? '/images/placeholder.jpg' : image}
+            alt={name}
+            fill
+            className="product-image cursor-pointer"
+            onError={handleImageError}
+          />
+        </Link>
       </div>
       <div className="flex flex-col h-full">
-        <h3 className="product-title">{name}</h3>
+        <h3 className="product-title">
+          <Link href={`/product/${product.id}`}>
+            {name}
+          </Link>
+        </h3>
         <p className="product-description">
           {description}
         </p>
