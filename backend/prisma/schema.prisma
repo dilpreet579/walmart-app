@@ -22,7 +22,7 @@ model Product {
   name            String
   price           Float
   image           String
-  discountedPrice Float
+  discountedPrice Float?
   rating          Float
   description     String
   category        String

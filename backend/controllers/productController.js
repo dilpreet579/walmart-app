@@ -27,7 +27,7 @@ exports.getProductById = async (req, res, next) => {
 exports.createProduct = async (req, res, next) => {
   try {
     const { name, price, image, discountedPrice, rating, description, category } = req.body;
-    if (!name || price === undefined || !image || discountedPrice === undefined || rating === undefined || !description || !category) {
+    if (!name || price === undefined || !image || rating === undefined || !description || !category) {
       //console.log(req.body);
       return res.status(400).json({ message: 'All product fields are required.' });
     }
