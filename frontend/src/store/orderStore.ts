@@ -1,12 +1,29 @@
 import { create } from 'zustand'
 import { apiFetch } from '../utils/api'
 
+export interface OrderItem {
+  id: number
+  productId: number
+  quantity: number
+  price: number
+  product: {
+    id: number
+    name: string
+    price: number
+    discountedPrice?: number
+    image: string
+    rating: number
+    description: string
+    category: string
+  }
+}
+
 export interface Order {
   id: number
-  items: Array<{ productId: number; quantity: number }>
   total: number
-  status: string
   createdAt: string
+  paymentIntentId?: string
+  items: OrderItem[]
 }
 
 export interface OrderState {
@@ -14,7 +31,7 @@ export interface OrderState {
   loading: boolean
   error: string | null
   fetchOrders: () => Promise<void>
-  placeOrder: (items: Array<{ productId: number; quantity: number }>) => Promise<void>
+  placeOrder: (addressId: number, paymentIntentId: string) => Promise<void>
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'
@@ -30,19 +47,19 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       const res = await apiFetch(`${API_BASE}/orders`)
       if (!res.ok) throw new Error('Failed to fetch orders')
       const data = await res.json()
-      set({ orders: data.orders, loading: false })
+      set({ orders: data, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
   },
 
-  placeOrder: async (items) => {
+  placeOrder: async (addressId, paymentIntentId) => {
     set({ loading: true, error: null })
     try {
       const res = await apiFetch(`${API_BASE}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ addressId, paymentIntentId })
       })
       if (!res.ok) throw new Error('Failed to place order')
       await get().fetchOrders()
