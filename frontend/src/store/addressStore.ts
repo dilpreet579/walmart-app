@@ -4,12 +4,11 @@ import { apiFetch } from '../utils/api'
 export interface Address {
   id: number
   userId: number
-  street: string
+  line1: string
   city: string
-  state: string
   zip: string
   country: string
-  isDefault: boolean
+  phone: string
 }
 
 export interface AddressState {
@@ -18,7 +17,7 @@ export interface AddressState {
   error: string | null
   fetchAddresses: () => Promise<void>
   addAddress: (address: Omit<Address, 'id' | 'userId'>) => Promise<void>
-  updateAddress: (id: number, address: Partial<Address>) => Promise<void>
+  updateAddress: (id: number, address: Partial<Omit<Address, 'id' | 'userId'>>) => Promise<void>
   deleteAddress: (id: number) => Promise<void>
 }
 
@@ -35,7 +34,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
       const res = await apiFetch(`${API_BASE}/addresses`)
       if (!res.ok) throw new Error('Failed to fetch addresses')
       const data = await res.json()
-      set({ addresses: data.addresses, loading: false })
+      set({ addresses: data, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -77,7 +76,8 @@ export const useAddressStore = create<AddressState>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const res = await apiFetch(`${API_BASE}/addresses/${id}`, {
-        method: 'DELETE' })
+        method: 'DELETE'
+      })
       if (!res.ok) throw new Error('Failed to delete address')
       await get().fetchAddresses()
       set({ loading: false })

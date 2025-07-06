@@ -31,13 +31,17 @@ exports.updateAddress = async (req, res, next) => {
   try {
     const userId = req.userId;
     const id = parseInt(req.params.id);
-    const { line1, city, zip, country, phone } = req.body;
-    const address = await prisma.address.update({
+
+    // Ownership check before updating
+    const address = await prisma.address.findUnique({ where: { id } });
+    if (!address || address.userId !== userId) return res.status(403).json({ message: 'Forbidden' });
+
+    const updated = await prisma.address.update({
       where: { id },
-      data: { line1, city, zip, country, phone }
+      data: req.body
     });
-    if (address.userId !== userId) return res.status(403).json({ message: 'Forbidden' });
-    res.json(address);
+
+    res.json(updated);
   } catch (error) {
     next(error);
   }
@@ -48,8 +52,10 @@ exports.deleteAddress = async (req, res, next) => {
   try {
     const userId = req.userId;
     const id = parseInt(req.params.id);
+
     const address = await prisma.address.findUnique({ where: { id } });
     if (!address || address.userId !== userId) return res.status(404).json({ message: 'Address not found' });
+
     await prisma.address.delete({ where: { id } });
     res.json({ message: 'Address deleted' });
   } catch (error) {
