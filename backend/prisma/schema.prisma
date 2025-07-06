@@ -27,7 +27,6 @@ model Product {
   description     String
   category        String
   cartItems       CartItem[]
-  paymentIntentId String?
   orderItems      OrderItem[]
 }
 
