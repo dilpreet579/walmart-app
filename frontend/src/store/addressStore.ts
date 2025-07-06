@@ -31,9 +31,10 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   fetchAddresses: async () => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/addresses`)
+      const res = await apiFetch(`${API_BASE}/address`)
       if (!res.ok) throw new Error('Failed to fetch addresses')
       const data = await res.json()
+      console.log(data)
       set({ addresses: data, loading: false })
     } catch (e: any) {
       set({ error: e.message, loading: false })
@@ -43,7 +44,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   addAddress: async (address) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/addresses`, {
+      const res = await apiFetch(`${API_BASE}/address`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(address)
@@ -59,7 +60,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   updateAddress: async (id, address) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/addresses/${id}`, {
+      const res = await apiFetch(`${API_BASE}/address/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(address)
@@ -75,7 +76,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   deleteAddress: async (id) => {
     set({ loading: true, error: null })
     try {
-      const res = await apiFetch(`${API_BASE}/addresses/${id}`, {
+      const res = await apiFetch(`${API_BASE}/address/${id}`, {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error('Failed to delete address')
