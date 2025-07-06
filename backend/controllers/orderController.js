@@ -1,74 +1,93 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 
 // Create a new order from user's cart
 exports.createOrder = async (req, res, next) => {
   try {
-    const userId = req.userId;
-    const { addressId } = req.body;
-    // Get cart with items
+    const userId = req.userId
+    const { addressId, paymentIntentId } = req.body
+
+    if (!paymentIntentId) {
+      return res.status(400).json({ message: 'Payment intent is required' })
+    }
+
+    // Get the cart with products
     const cart = await prisma.cart.findUnique({
       where: { userId },
-      include: { items: { include: { product: true } } }
-    });
+      include: { items: { include: { product: true } } },
+    })
+
     if (!cart || !cart.items.length) {
-      return res.status(400).json({ message: 'Cart is empty' });
+      return res.status(400).json({ message: 'Cart is empty' })
     }
-    // Calculate total
-    const total = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    // Create order
+
+    // Calculate the order total
+    const total = cart.items.reduce((sum, item) => {
+      const price = item.product.discountedPrice ?? item.product.price
+      return sum + price * item.quantity
+    }, 0)
+
+    // Create the order
     const order = await prisma.order.create({
       data: {
         userId,
-        total,
         addressId,
+        paymentIntentId,
+        total,
         items: {
           create: cart.items.map(item => ({
             productId: item.productId,
             quantity: item.quantity,
-            price: item.product.price
-          }))
-        }
+            price: item.product.discountedPrice ?? item.product.price,
+          })),
+        },
       },
-      include: { items: true }
-    });
-    // Clear cart
-    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-    res.status(201).json(order);
-  } catch (error) {
-    next(error);
-  }
-};
+      include: { items: { include: { product: true } } },
+    })
 
-// Get all orders for current user
+    // Clear the cart
+    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } })
+
+    res.status(201).json(order)
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Get all orders for the current user
 exports.getUserOrders = async (req, res, next) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId
+
     const orders = await prisma.order.findMany({
       where: { userId },
-      include: { items: true },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(orders);
-  } catch (error) {
-    next(error);
-  }
-};
+      include: { items: { include: { product: true } } },
+      orderBy: { createdAt: 'desc' },
+    })
 
-// Get order by ID (must belong to user)
+    res.json(orders)
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Get single order by ID
 exports.getOrderById = async (req, res, next) => {
   try {
-    const userId = req.userId;
-    const id = parseInt(req.params.id);
+    const userId = req.userId
+    const id = parseInt(req.params.id)
+
     const order = await prisma.order.findUnique({
       where: { id },
-      include: { items: true }
-    });
+      include: { items: { include: { product: true } } },
+    })
+
     if (!order || order.userId !== userId) {
-      return res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: 'Order not found' })
     }
-    res.json(order);
+
+    res.json(order)
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
