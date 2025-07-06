@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useCartStore } from '../store/cartStore'
 import { useAuthStore } from '../store/authStore'
@@ -14,12 +14,14 @@ export default function Navbar() {
   const itemCount = useCartStore(state => state.itemCount)
   const total = useCartStore(state => state.total)
 
+  const user = useAuthStore(state => state.user)
   const isLoggedIn = useAuthStore(state => state.isLoggedIn)
   const logout = useAuthStore(state => state.logout)
   const checkAuthStatus = useAuthStore(state => state.checkAuthStatus)
 
   useEffect(() => {
     checkAuthStatus()
+
     const handleStorage = (event: StorageEvent) => {
       if (event.key === 'jwt_token') {
         checkAuthStatus()
@@ -48,24 +50,19 @@ export default function Navbar() {
     <nav className="bg-walmart-blue sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <span className="text-white text-xl font-bold cursor-pointer">Walmart</span>
           </Link>
 
-          {/* Deals */}
-          <Link href="/deals" className="hidden md:flex items-center bg-walmart-yellow text-black px-3 py-1 rounded-full font-medium hover:bg-yellow-400 transition-colors">
-            🔥 Today's Deals
-          </Link>
-
           {/* Categories */}
           <div className="hidden md:flex space-x-4 ml-4">
-            <Link href="/category/electronics" className="text-white hover:text-gray-200">Electronics</Link>
-            <Link href="/category/appliances" className="text-white hover:text-gray-200">Appliances</Link>
-            <Link href="/category/footwear" className="text-white hover:text-gray-200">Footwear</Link>
-            <Link href="/category/toys" className="text-white hover:text-gray-200">Toys</Link>
-            <Link href="/category/sports" className="text-white hover:text-gray-200">Sports</Link>
-            <Link href="/category/baby" className="text-white hover:text-gray-200">Baby</Link>
+            {['electronics', 'appliances', 'footwear', 'toys', 'sports', 'baby'].map((cat) => (
+              <Link key={cat} href={`/category/${cat}`} className="text-white hover:text-gray-200 capitalize">
+                {cat}
+              </Link>
+            ))}
           </div>
 
           {/* Search */}
@@ -84,8 +81,8 @@ export default function Navbar() {
             </form>
           </div>
 
-          {/* Cart */}
-          <div className="flex items-center">
+          {/* Right Side */}
+          <div className="flex items-center space-x-4">
             <Link href="/cart" className="relative group">
               <button className="btn text-white p-2 rounded-full hover:bg-blue-700">
                 <ShoppingCartIcon className="h-6 w-6" />
@@ -102,16 +99,21 @@ export default function Navbar() {
                 </div>
               )}
             </Link>
-            {isLoggedIn ? (
-              <button
-                className="btn btn-secondary text-white ml-2"
-                onClick={() => {
-                  logout()
-                  router.push('/login')
-                }}
-              >
-                Logout
-              </button>
+
+            {/* Auth */}
+            {isLoggedIn && user ? (
+              <>
+                <span className="text-white">{user.name}</span>
+                <button
+                  className="btn btn-secondary text-white ml-2"
+                  onClick={() => {
+                    logout()
+                    router.push('/login')
+                  }}
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <>
                 <Link href="/login" className="text-white hover:underline">Login</Link>

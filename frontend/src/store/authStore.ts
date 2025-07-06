@@ -40,7 +40,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) throw new Error('Invalid credentials')
       const data = await res.json()
       localStorage.setItem('jwt_token', data.token)
-      set({ user: data.user, isLoggedIn: true, loading: false })
+
+      await useAuthStore.getState().fetchUser()
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -63,7 +64,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!res.ok) throw new Error('Registration failed')
       const data = await res.json()
       localStorage.setItem('jwt_token', data.token)
-      set({ user: data.user, isLoggedIn: true, loading: false })
+
+      await useAuthStore.getState().fetchUser()
     } catch (e: any) {
       set({ error: e.message, loading: false })
     }
@@ -73,10 +75,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null })
     try {
       //here apiFetch is required to get the user data
-      const res = await apiFetch(`${API_BASE}/auth/me`)
+      const res = await apiFetch(`${API_BASE}/auth/profile`)
       if (!res.ok) throw new Error('Failed to fetch user')
       const data = await res.json()
-      set({ user: data.user, isLoggedIn: true, loading: false })
+      set({ user: data, isLoggedIn: true, loading: false })
     } catch (e: any) {
       set({ error: e.message, isLoggedIn: false, loading: false })
     }
@@ -86,6 +88,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('jwt_token')
       set({ isLoggedIn: !!token })
+      if (token) useAuthStore.getState().fetchUser()
     }
   },
 }))
