@@ -5,6 +5,32 @@ async function main() {
   await prisma.product.createMany({
     data: [
       {
+        name: "Apple iPhone 13",
+        price: 699.99,
+        image: "/images/iphone.jpg",
+        discountedPrice: 599.99,
+        rating: 4.5,
+        description: "A15 Bionic chip, Super Retina XDR display, and advanced dual-camera system",
+        category: "Electronics"
+      },
+      {
+        name: "Samsung 55\" 4K Smart TV",
+        price: 499.99,
+        image: "/images/tv.jpg",
+        discountedPrice: 399.99,
+        rating: 4.2,
+        description: "Crystal UHD, HDR, built-in voice assistants",
+        category: "Electronics"
+      },
+      {
+        name: "Nike Air Max",
+        price: 129.99,
+        image: "/images/shoes.jpg",
+        rating: 4.7,
+        description: "Comfortable cushioning and stylish design for everyday wear",
+        category: "Footwear"
+      },
+      {
         name: "KitchenAid Stand Mixer",
         price: 279.99,
         discountedPrice: 229.99,
@@ -188,7 +214,7 @@ async function main() {
     ]
   });
 
-  console.log('✅ Additional products seeded successfully.');
+  console.log('✅ Products seeded successfully.');
 }
 
 main()
