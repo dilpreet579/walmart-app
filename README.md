@@ -1,18 +1,18 @@
 # Walmart E-Commerce App
 
-A full-stack, production-ready Walmart clone e-commerce app. Features a modern Next.js frontend and Node.js/Express backend, real authentication, cart, orders, address management, Stripe payments, and global state with Zustand.
+A full-stack, production-ready Walmart clone e-commerce app with a modern Next.js frontend and Node.js/Express backend. Features real authentication, cart, orders, address management, Stripe payments, Google reCAPTCHA v3 bot protection, and global state with Zustand.
 
 ---
 
 ## Things to be changed
 
 1. Remove JWT token from localStorage.
-2. I want when the user tries to add a product to his cart, he is prompted to login first if he isnt logged in, if logged in then the product gets added.
-3. add orders page.
+2. add orders page.
 
 ---
 
 ## 🚀 Features
+
 - User authentication (register, login, JWT)
 - Product catalog with category filtering
 - Cart management (add, update, remove, clear)
@@ -21,24 +21,30 @@ A full-stack, production-ready Walmart clone e-commerce app. Features a modern N
 - Address book (CRUD)
 - Protected routes (cart/orders/addresses require login)
 - Real backend API integration everywhere
+- Google reCAPTCHA v3 bot protection (register, login, checkout)
 - Global state via Zustand
 - Responsive, modern UI
 
 ---
 
 ## 🛠️ Tech Stack
+
 - **Frontend:** Next.js (App Router), React, Zustand, Tailwind CSS
 - **Backend:** Node.js, Express, PostgreSQL (Prisma ORM)
 - **Auth:** JWT (localStorage, to be migrated to HTTP-only cookies)
 - **Payments:** Stripe
+- **Bot Security:** Google reCAPTCHA v3
 - **Other:** Docker (Postgres), REST API
 
 ---
 
 ## ⚡ Prerequisites
+
 - Node.js (v18+ recommended)
 - Docker (for Postgres DB)
 - npm or yarn
+- Stripe account (for test keys)
+- Google reCAPTCHA v3 keys
 
 ---
 
@@ -53,26 +59,28 @@ cd Walmart-E-Commerce-App
 ### 2. Backend Setup
 ```sh
 cd backend
-cp .env.example .env  # Fill out DB, JWT, Stripe, etc.
-docker compose up -d  # Start Postgres
+cp .env.example .env      # Fill out DB, JWT, Stripe, reCAPTCHA, etc.
+docker compose up -d      # Start Postgres
 npm install
 npx prisma migrate dev
 npx prisma generate
-npm run dev           # or npm start for production
+npm run dev               # or npm start for production
 ```
 
 ### 3. Frontend Setup
 ```sh
 cd ../frontend
-cp .env.example .env  # Set NEXT_PUBLIC_API_BASE_URL, etc.
+cp .env.example .env      # Set NEXT_PUBLIC_API_BASE_URL, Stripe, reCAPTCHA, etc.
 npm install
-npm run dev           # Next.js dev server
+npm run dev               # Next.js dev server
 ```
 
 ---
 
 ## ⚙️ Environment Variables
+
 ### Backend `.env`
+- `PORT=5000`
 - `DATABASE_URL=postgresql://postgres:password@localhost:5432/walmart`
 - `JWT_SECRET=...`
 - `STRIPE_SECRET_KEY=...`
@@ -81,6 +89,18 @@ npm run dev           # Next.js dev server
 ### Frontend `.env`
 - `NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...`
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY=...`
+
+---
+
+## 🛡️ Google reCAPTCHA v3 Integration
+
+- **Protected Forms:** Registration, Login, Checkout
+- **Setup:**  
+  - Get site key and secret key from [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin/)
+  - Add allowed domains (e.g., `localhost`, your production domain)
+  - Set `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` in frontend `.env`
+  - Set `RECAPTCHA_SECRET_KEY` in backend `.env`
 
 ---
 
@@ -101,23 +121,21 @@ Use the following card numbers in Stripe's test mode for payment testing:
 
 ---
 
-<!--
-## Dev TODO
-1. Remove JWT token from localStorage.
-2. Prompt login on add-to-cart if not logged in.
-3. Add orders page.
--->
-
-
-
 ## 🟢 Development Notes
+
 - All global state is managed by Zustand (cart, products, auth, orders, addresses)
-- No legacy Context API or prop drilling
 - JWT is currently stored in localStorage (see TODO)
 - Backend uses Prisma ORM and Dockerized Postgres
 - All REST endpoints are protected via JWT where required
+- reCAPTCHA v3 is enforced on sensitive forms for bot protection
 
 ---
+
+<!--
+## Dev TODO
+1. Remove JWT token from localStorage.
+2. Add orders page.
+-->
 
 ## 📄 License
 MIT
