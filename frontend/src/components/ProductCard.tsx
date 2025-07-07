@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { StarIcon } from '@heroicons/react/24/solid'
 import { useCartStore } from '../store/cartStore'
+import { useAuthStore } from '../store/authStore'
 import Image from 'next/image'
 
 interface Product {
@@ -27,6 +28,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   const updateQuantity = useCartStore(state => state.updateQuantity)
   const removeFromCart = useCartStore(state => state.removeFromCart)
 
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn)
+  const [loginPrompted, setLoginPrompted] = useState(false);
+
+  // Hide login prompt after 3 seconds
+  React.useEffect(() => {
+    if (loginPrompted) {
+      const timer = setTimeout(() => setLoginPrompted(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [loginPrompted]);
   const { name, price, discountedPrice, image, rating, description } = product
   const [imageError, setImageError] = useState(false)
 
@@ -36,6 +47,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   )
 
   const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      setLoginPrompted(true);
+      return;
+    }
     await addToCart(product.id, 1)
   }
 
@@ -124,12 +139,17 @@ export default function ProductCard({ product }: ProductCardProps) {
               </button>
             </div>
           ) : (
-            <button
-              onClick={handleAddToCart}
-              className="btn-primary mt-2 w-full flex-center"
-            >
-              Add to Cart
-            </button>
+            <>
+              <button
+                onClick={handleAddToCart}
+                className="btn-primary mt-2 w-full flex-center"
+              >
+                Add to Cart
+              </button>
+              {loginPrompted && !isLoggedIn && (
+                <div className="text-red-600 text-xs mt-2 text-center">You must login to add products to your cart.</div>
+              )}
+            </>
           )}
         </div>
       </div>
