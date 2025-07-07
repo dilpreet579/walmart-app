@@ -1,14 +1,10 @@
-import React from 'react'
 import CategoryPage from '../../../components/CategoryPage'
 
-interface CategoryPageProps {
-  params: {
-    slug: string
-  }
-}
+type Params = Promise<{ slug: string }>
 
-export default function Category({ params }: CategoryPageProps) {
-  const categoryMap: { [key: string]: string } = {
+export default async function Category(props: { params: Params }) {
+  const params = await props.params
+  const categoryMap: Record<string, string> = {
     electronics: 'Electronics',
     appliances: 'Appliances',
     footwear: 'Footwear',
@@ -16,7 +12,9 @@ export default function Category({ params }: CategoryPageProps) {
     sports: 'Sports',
     baby: 'Baby',
   }
+
   const category = categoryMap[params.slug] || params.slug
+
   return <CategoryPage category={category} />
 }
 
