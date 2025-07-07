@@ -12,25 +12,40 @@ const footerLinks = {
     { name: 'Baby', href: '/category/baby' },
   ],
   help: [
-    { name: 'Help Center', href: '/help' },
-    { name: 'Track Orders', href: '/orders' },
-    { name: 'Returns', href: '/returns' },
-    { name: 'Contact Us', href: '/contact' },
-    { name: 'Product Recalls', href: '/recalls' },
+    // { name: 'Help Center', href: '/help' },
+    // { name: 'Track Orders', href: '/orders' },
+    // { name: 'Returns', href: '/returns' },
+    // { name: 'Contact Us', href: '/contact' },
+    // { name: 'Product Recalls', href: '/recalls' },
+    { name: 'Help Center' },
+    { name: 'Track Orders' },
+    { name: 'Returns' },
+    { name: 'Contact Us' },
+    { name: 'Product Recalls' },
   ],
   about: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Our Stores', href: '/stores' },
-    { name: 'Corporate', href: '/corporate' },
-    { name: 'News & Blog', href: '/news' },
+    // { name: 'About Us', href: '/about' },
+    // { name: 'Careers', href: '/careers' },
+    // { name: 'Our Stores', href: '/stores' },
+    // { name: 'Corporate', href: '/corporate' },
+    // { name: 'News & Blog', href: '/news' },
+    { name: 'About Us' },
+    { name: 'Careers' },
+    { name: 'Our Stores' },
+    { name: 'Corporate' },
+    { name: 'News & Blog' },
   ],
   services: [
-    { name: 'Walmart+', href: '/plus' },
-    { name: 'Pharmacy', href: '/pharmacy' },
-    { name: 'Money Services', href: '/money-services' },
-    { name: 'Gift Cards', href: '/gift-cards' },
-    { name: 'Protection Plans', href: '/protection-plans' },
+    // { name: 'Walmart+', href: '/plus' },
+    // { name: 'Pharmacy', href: '/pharmacy' },
+    // { name: 'Money Services', href: '/money-services' },
+    // { name: 'Gift Cards', href: '/gift-cards' },
+    // { name: 'Protection Plans', href: '/protection-plans' },
+    { name: 'Walmart+' },
+    { name: 'Pharmacy' },
+    { name: 'Money Services' },
+    { name: 'Gift Cards' },
+    { name: 'Protection Plans' },
   ],
 }
 
@@ -62,7 +77,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-4">
               {footerLinks.help.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href}
+                  <Link href="#"
                     className="text-base text-gray-600 hover:text-walmart-blue">
                     {link.name}
                   </Link>
@@ -78,7 +93,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-4">
               {footerLinks.about.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href}
+                  <Link href="#"
                     className="text-base text-gray-600 hover:text-walmart-blue">
                     {link.name}
                   </Link>
@@ -94,7 +109,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-4">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href}
+                  <Link href="#"
                     className="text-base text-gray-600 hover:text-walmart-blue">
                     {link.name}
                   </Link>
