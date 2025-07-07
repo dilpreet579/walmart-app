@@ -7,7 +7,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // Allow all cross-origin requests
 app.use(helmet());
 
 // Basic health check route
