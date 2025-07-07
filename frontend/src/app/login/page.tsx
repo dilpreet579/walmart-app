@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { executeRecaptcha, verifyCaptchaToken } from "@/utils/recaptcha";
 import Link from "next/link";
 
 import { useRouter } from "next/navigation";
@@ -19,7 +20,23 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      // Replace with your backend endpoint
+      // Run Google reCAPTCHA v3
+      const recaptchaToken = await executeRecaptcha('login');
+      if (!recaptchaToken) {
+        console.log("reCAPTCHA failed. Please try again.");
+        throw new Error("reCAPTCHA failed. Please try again.");
+      } else {
+        console.log("reCAPTCHA passed.");
+      }
+      // Verify token with backend
+      const captchaOk = await verifyCaptchaToken(recaptchaToken);
+      if (!captchaOk) {
+        console.log("Bot verification failed. Please try again.");
+        throw new Error("Bot verification failed. Please try again.");
+      } else {
+        console.log("Bot verification passed.");
+      }
+      // Proceed with login
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

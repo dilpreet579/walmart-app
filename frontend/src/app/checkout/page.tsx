@@ -7,6 +7,7 @@ import { Elements, useStripe, useElements, CardElement } from '@stripe/react-str
 import { useCartStore } from '../../store/cartStore'
 import { useAddressStore } from '../../store/addressStore'
 import { useOrderStore } from '../../store/orderStore'
+import { executeRecaptcha, verifyCaptchaToken } from '@/utils/recaptcha'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
 
@@ -63,6 +64,19 @@ function Checkout() {
     setError(null)
 
     try {
+      // 0. Bot protection: Google reCAPTCHA v3
+      const recaptchaToken = await executeRecaptcha('checkout')
+      if (!recaptchaToken) {
+        setError('reCAPTCHA failed. Please try again.')
+        setLoading(false)
+        return
+      }
+      const captchaOk = await verifyCaptchaToken(recaptchaToken)
+      if (!captchaOk) {
+        setError('Bot verification failed. Please try again.')
+        setLoading(false)
+        return
+      }
       const jwt = localStorage.getItem('jwt_token')
 
       // 1. Create a payment intent
