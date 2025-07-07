@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'walmart-blue': '#0071DC',  //#0071DC -> #003D28
+        'walmart-blue': '#003D28',  //#0071DC -> #003D28
         'walmart-yellow': '#FFC220'
       }
     },

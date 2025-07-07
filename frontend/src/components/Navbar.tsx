@@ -53,7 +53,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <span className="text-white text-xl font-bold cursor-pointer">Walmart</span>
+            <span className="text-white text-xl font-bold cursor-pointer">MegaMart</span>
           </Link>
 
           {/* Categories */}
@@ -74,7 +74,7 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={handleInputChange}
                   className="input-search"
-                  placeholder="Search everything at Walmart online and in store"
+                  placeholder="Search everything at MegaMart online and in store"
                 />
                 <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
