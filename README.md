@@ -29,7 +29,7 @@ A full-stack, production-ready Walmart clone e-commerce app with a modern Next.j
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Next.js (App Router), React, Zustand, Tailwind CSS
+- **Frontend:** Next.js (App Router), React, Zustand, Tailwind CSS, Heroicons
 - **Backend:** Node.js, Express, PostgreSQL (Prisma ORM)
 - **Auth:** JWT (localStorage, to be migrated to HTTP-only cookies)
 - **Payments:** Stripe
