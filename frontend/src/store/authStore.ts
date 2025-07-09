@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { apiFetch } from '../utils/api'
+import { resetBotSessionData } from '../utils/botSessionTracker'
 
 export interface User {
   id: number
@@ -50,6 +51,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem('jwt_token')
     set({ user: null, isLoggedIn: false })
+    if (typeof window !== 'undefined') {
+      // Reset bot session data on logout
+      resetBotSessionData()
+    }
   },
 
   register: async (name, email, password) => {

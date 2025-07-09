@@ -8,9 +8,11 @@ import { useCartStore } from '../../store/cartStore'
 import { useAddressStore } from '../../store/addressStore'
 import { useOrderStore } from '../../store/orderStore'
 import { executeRecaptcha, verifyCaptchaToken } from '@/utils/recaptcha'
-import { getBotSessionData } from '@/utils/botSessionTracker'
+import { getBotSessionData, resetBotSessionData } from '@/utils/botSessionTracker'
+import { apiFetch } from '@/utils/api'
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
 export default function CheckoutPage() {
   return (
@@ -106,14 +108,12 @@ function Checkout() {
         setLoading(false)
         return
       }
-      const jwt = localStorage.getItem('jwt_token')
 
       // 1. Create a payment intent
-      const paymentRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'}/payment/intent`, {
+      const paymentRes = await apiFetch(`${API_BASE}/payment/intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`,
         },
         body: JSON.stringify({
           amount: total, // send dollars, backend multiplies by 100
@@ -136,23 +136,15 @@ function Checkout() {
       }
 
       // 3. Create order in backend
-      const orderRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api'}/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`,
-        },
-        body: JSON.stringify({
-          addressId: selectedAddressId,
-          paymentIntentId: paymentIntent.id,
-        }),
-      })
-
-      if (!orderRes.ok) throw new Error('Failed to place order')
-
       await placeOrder(selectedAddressId, paymentIntent.id)
       await clearCart()
 
+      // Reset bot session data after successful payment
+      if (typeof window !== 'undefined') {
+        resetBotSessionData()
+      }
+
+      // 4. Redirect to payment success
       router.push('/payment-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
