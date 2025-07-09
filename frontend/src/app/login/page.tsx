@@ -5,6 +5,7 @@ import { executeRecaptcha, verifyCaptchaToken } from "@/utils/recaptcha";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
+import { setCaptchaSuccess } from "@/utils/botSessionTracker";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
 
@@ -29,6 +30,7 @@ export default function LoginPage() {
         throw new Error("reCAPTCHA failed. Please try again.");
       } else {
         console.log("reCAPTCHA passed.");
+        setCaptchaSuccess(true);
       }
       // Verify token with backend
       const captchaOk = await verifyCaptchaToken(recaptchaToken);

@@ -8,6 +8,7 @@ import { useCartStore } from '../../store/cartStore'
 import { useAddressStore } from '../../store/addressStore'
 import { useOrderStore } from '../../store/orderStore'
 import { executeRecaptcha, verifyCaptchaToken } from '@/utils/recaptcha'
+import { getBotSessionData } from '@/utils/botSessionTracker'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
 
@@ -74,6 +75,34 @@ function Checkout() {
       const captchaOk = await verifyCaptchaToken(recaptchaToken)
       if (!captchaOk) {
         setError('Bot verification failed. Please try again.')
+        setLoading(false)
+        return
+      }
+      // 0b. Bot session detection (custom ML)
+      try {
+        const botSessionData = getBotSessionData()
+        console.log('Bot session data:', botSessionData)
+        // TODO: set your Python backend URL
+        // const botRes = await fetch('http://localhost:8000/predict-bot', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(botSessionData),
+        // })
+        // if (botRes.ok) {
+        //   const botPrediction = await botRes.json()
+        //   if (botPrediction.is_bot) {
+        //     setError('Suspicious activity detected. Payment blocked. (' + (botPrediction.risk_factors?.join(', ') || 'Bot detected') + ')')
+        //     setLoading(false)
+        //     return
+        //   }
+        // } else {
+        //   setError('Bot detection service error. Please try again later.')
+        //   setLoading(false)
+        //   return
+        // }
+      } catch (botDetectErr: any) {
+        console.error('Error during bot detection:', botDetectErr)
+        setError('Error during bot detection: ' + (botDetectErr.message || 'Unknown error'))
         setLoading(false)
         return
       }
