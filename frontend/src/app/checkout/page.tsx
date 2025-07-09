@@ -153,116 +153,115 @@ function Checkout() {
   }
 
   return (
-    <div className="container-wrapper section">
-      <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Address */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Shipping Address</label>
-          <select
-            value={selectedAddressId ?? ''}
-            onChange={e => {
-              const val = e.target.value;
-              setSelectedAddressId(val ? Number(val) : null)
-            }}
-            className="block w-full rounded-md border-gray-300 shadow-sm"
-          >
-            <option value="">Select address</option>
-            {addresses.map(addr => (
-              <option key={addr.id} value={addr.id}>
-                {`${addr.line1}, ${addr.city}, ${addr.country}`}
-              </option>
-            ))}
-          </select>
-          <button type="button" className="mt-2 text-blue-600 underline text-sm" onClick={() => setShowAddForm(v => !v)}>
-            {showAddForm ? 'Cancel' : 'Add New Address'}
-          </button>
-          {showAddForm && (
-            <div className="mt-4 bg-gray-50 p-4 rounded border">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input
-                  className="input"
-                  placeholder="Address Line 1"
-                  value={addressForm.line1}
-                  onChange={e => setAddressForm(f => ({ ...f, line1: e.target.value }))}
-                  required
-                />
-                <input
-                  className="input"
-                  placeholder="City"
-                  value={addressForm.city}
-                  onChange={e => setAddressForm(f => ({ ...f, city: e.target.value }))}
-                  required
-                />
-                <input
-                  className="input"
-                  placeholder="Zip Code"
-                  value={addressForm.zip}
-                  onChange={e => setAddressForm(f => ({ ...f, zip: e.target.value }))}
-                  required
-                />
-                <input
-                  className="input"
-                  placeholder="Country"
-                  value={addressForm.country}
-                  onChange={e => setAddressForm(f => ({ ...f, country: e.target.value }))}
-                  required
-                />
-                <input
-                  className="input"
-                  placeholder="Phone"
-                  value={addressForm.phone}
-                  onChange={e => setAddressForm(f => ({ ...f, phone: e.target.value }))}
-                  required
-                />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 flex items-center justify-center">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+        <h1 className="text-3xl font-extrabold text-walmart-blue tracking-tight mb-8 text-center">Checkout</h1>
+        {error && <div className="text-red-600 text-center mb-4 font-medium bg-red-50 border border-red-200 rounded px-3 py-2">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Address */}
+          <div>
+            <label className="block text-base font-semibold text-gray-700 mb-2">Shipping Address</label>
+            <select
+              value={selectedAddressId || ''}
+              onChange={e => setSelectedAddressId(Number(e.target.value))}
+              className="block w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+            >
+              <option value="">Select address</option>
+              {addresses.map(addr => (
+                <option key={addr.id} value={addr.id}>
+                  {`${addr.line1}, ${addr.city}, ${addr.country}`}
+                </option>
+              ))}
+            </select>
+            <button type="button" className="mt-2 text-walmart-blue hover:underline text-sm font-semibold" onClick={() => setShowAddForm(v => !v)}>
+              {showAddForm ? 'Cancel' : 'Add New Address'}
+            </button>
+            {showAddForm && (
+              <div className="mt-4 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                    placeholder="Address Line 1"
+                    value={addressForm.line1}
+                    onChange={e => setAddressForm(f => ({ ...f, line1: e.target.value }))}
+                    required
+                  />
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                    placeholder="City"
+                    value={addressForm.city}
+                    onChange={e => setAddressForm(f => ({ ...f, city: e.target.value }))}
+                    required
+                  />
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                    placeholder="Zip Code"
+                    value={addressForm.zip}
+                    onChange={e => setAddressForm(f => ({ ...f, zip: e.target.value }))}
+                    required
+                  />
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                    placeholder="Country"
+                    value={addressForm.country}
+                    onChange={e => setAddressForm(f => ({ ...f, country: e.target.value }))}
+                    required
+                  />
+                  <input
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                    placeholder="Phone"
+                    value={addressForm.phone}
+                    onChange={e => setAddressForm(f => ({ ...f, phone: e.target.value }))}
+                    required
+                  />
+                </div>
+                {addAddressError && <div className="text-red-600 text-sm mt-2">{addAddressError}</div>}
+                <button
+                  type="button"
+                  className="w-full py-2 px-4 bg-walmart-blue hover:bg-blue-800 text-white font-bold rounded-lg shadow mt-4 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={addAddressLoading}
+                  onClick={async () => {
+                    setAddAddressLoading(true)
+                    setAddAddressError(null)
+                    try {
+                      await useAddressStore.getState().addAddress(addressForm)
+                      await fetchAddresses()
+                      // Find the latest address (assuming backend returns new at end)
+                      const latest = useAddressStore.getState().addresses.slice(-1)[0]
+                      setSelectedAddressId(latest?.id)
+                      setShowAddForm(false)
+                      setAddressForm({ line1: '', city: '', zip: '', country: '', phone: '' })
+                    } catch (err: any) {
+                      setAddAddressError(err.message || 'Failed to add address')
+                    } finally {
+                      setAddAddressLoading(false)
+                    }
+                  }}
+                >
+                  {addAddressLoading ? 'Adding...' : 'Save Address'}
+                </button>
               </div>
-              {addAddressError && <div className="text-red-600 text-sm mt-2">{addAddressError}</div>}
-              <button
-                type="button"
-                className="btn-primary mt-4"
-                disabled={addAddressLoading}
-                onClick={async () => {
-                  setAddAddressLoading(true)
-                  setAddAddressError(null)
-                  try {
-                    await useAddressStore.getState().addAddress(addressForm)
-                    await fetchAddresses()
-                    // Find the latest address (assuming backend returns new at end)
-                    const latest = useAddressStore.getState().addresses.slice(-1)[0]
-                    setSelectedAddressId(latest?.id)
-                    setShowAddForm(false)
-                    setAddressForm({ line1: '', city: '', zip: '', country: '', phone: '' })
-                  } catch (err: any) {
-                    setAddAddressError(err.message || 'Failed to add address')
-                  } finally {
-                    setAddAddressLoading(false)
-                  }
-                }}
-              >
-                {addAddressLoading ? 'Adding...' : 'Save Address'}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Card */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Card Details</label>
-          <div className="p-3 border rounded-md bg-white">
-            <CardElement options={{ hidePostalCode: true }} />
+            )}
           </div>
-        </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={!stripe || loading || !selectedAddressId || addresses.length === 0}
-          className={`w-full btn-primary ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {loading ? 'Processing...' : `Pay $${total.toFixed(2)}`}
-        </button>
-      </form>
+          {/* Card */}
+          <div>
+            <label className="block text-base font-semibold text-gray-700 mb-2">Card Details</label>
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <CardElement options={{ hidePostalCode: true }} />
+            </div>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={!stripe || loading || !selectedAddressId || addresses.length === 0}
+            className={`w-full py-3 px-4 bg-walmart-blue hover:bg-blue-800 text-white font-bold rounded-lg shadow transition text-lg disabled:opacity-60 disabled:cursor-not-allowed ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {loading ? (<span className="flex items-center justify-center"><svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Processing...</span>) : `Pay $${total.toFixed(2)}`}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

@@ -51,9 +51,9 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100">
+    <footer className="bg-gradient-to-t from-blue-50 to-white border-t-4 border-walmart-blue rounded-t-2xl shadow-inner mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
           <div>
             <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">
               Shop
@@ -119,9 +119,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-200 pt-8">
+        <div className="mt-12 border-t border-blue-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex space-x-6 md:order-2">
+            <div className="flex space-x-6">
               <Link href="#" className="text-gray-400 hover:text-walmart-blue">
                 <span className="sr-only">Facebook</span>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">

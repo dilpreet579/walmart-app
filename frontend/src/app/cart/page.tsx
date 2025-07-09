@@ -62,82 +62,87 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container-wrapper section">
-      <h1>Shopping Cart</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Cart Items */}
-        <div className="lg:col-span-2">
-          {items.map((item) => (
-            <div key={item.productId} className="flex items-center border-b py-4">
-              <div className="flex-shrink-0 w-24 h-24 relative">
-                <Image
-                  src={item.product?.image || '/images/placeholder.jpg'}
-                  alt={item.product?.name || 'Product'}
-                  fill
-                  className="object-cover rounded"
-                />
-              </div>
-              <div className="ml-4 flex-1">
-                <h3 className="text-lg font-medium">{item.product?.name || `Product #${item.productId}`}</h3>
-                <div className="mt-2 flex items-center">
-                  <select
-                    value={item.quantity}
-                    onChange={(e) => updateQuantity(item.productId, parseInt(e.target.value))}
-                    className="rounded border border-gray-300 py-1 px-2 mr-4"
-                  >
-                    {[...Array(10)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="text-walmart-blue font-semibold">
-                    ${(item.product ? (item.product.discountedPrice ?? item.product.price) * item.quantity : 0).toFixed(2)}
-                  </span>
-                  <button
-                    onClick={() => removeFromCart(item.productId)}
-                    className="btn-danger ml-4"
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-10 px-2 flex justify-center">
+      <div className="w-full max-w-6xl">
+        <h1 className="text-3xl font-extrabold text-walmart-blue tracking-tight mb-8 text-center">Shopping Cart</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Cart Items */}
+          <div className="lg:col-span-2">
+            <div className="space-y-6">
+              {items.map((item) => (
+                <div key={item.productId} className="flex items-center bg-white rounded-xl shadow p-4 hover:shadow-lg transition group">
+                  <div className="flex-shrink-0 w-24 h-24 relative overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                    <Image
+                      src={item.product?.image || '/images/placeholder.jpg'}
+                      alt={item.product?.name || 'Product'}
+                      fill
+                      className="object-cover group-hover:scale-105 transition"
+                    />
+                  </div>
+                  <div className="ml-6 flex-1">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{item.product?.name || `Product #${item.productId}`}</h3>
+                    <div className="flex items-center gap-4 mt-2">
+                      <select
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(item.productId, parseInt(e.target.value))}
+                        className="rounded border border-gray-300 py-1 px-2 focus:ring-2 focus:ring-walmart-blue focus:border-walmart-blue transition"
+                      >
+                        {[...Array(10)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="text-walmart-blue font-bold text-lg">
+                        ${(item.product ? (item.product.discountedPrice ?? item.product.price) * item.quantity : 0).toFixed(2)}
+                      </span>
+                      <button
+                        onClick={() => removeFromCart(item.productId)}
+                        className="ml-4 p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 shadow-sm transition"
+                        aria-label="Remove item"
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
-              <div className="border-t pt-2 mt-2">
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-xl p-8 sticky top-8">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
+              <div className="space-y-3 text-base">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-semibold">${total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-semibold">Free</span>
+                </div>
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex justify-between text-lg font-extrabold text-walmart-blue">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
+              <button
+                onClick={() => router.push('/checkout')}
+                className="w-full py-3 px-4 bg-walmart-blue hover:bg-blue-800 text-white font-bold rounded-lg shadow transition mt-8 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                Proceed to Checkout
+              </button>
+              <button
+                onClick={clearCart}
+                className="w-full py-3 px-4 mt-4 bg-red-50 hover:bg-red-100 text-red-700 font-semibold rounded-lg border border-red-200 shadow-sm transition"
+              >
+                Clear Cart
+              </button>
             </div>
-            <button
-              onClick={() => router.push('/checkout')}
-              className="w-full btn-primary mt-6"
-            >
-              Proceed to Checkout
-            </button>
-            <button
-              onClick={clearCart}
-              className="btn-danger w-full mt-4"
-            >
-              Clear Cart
-            </button>
           </div>
         </div>
       </div>

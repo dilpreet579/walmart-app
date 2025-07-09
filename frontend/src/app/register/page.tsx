@@ -67,62 +67,77 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="container-wrapper section max-w-md mx-auto mt-16">
-      <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">Name</label>
-          <input
-            type="text"
-            className="input w-full"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            required
-            autoFocus
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        <h1 className="text-3xl font-extrabold text-center mb-6 text-walmart-blue tracking-tight">Create your account</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="name" className="block mb-1 font-semibold text-gray-700">Name</label>
+            <input
+              id="name"
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+              autoFocus
+              autoComplete="name"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="block mb-1 font-semibold text-gray-700">Email</label>
+            <input
+              id="email"
+              type="email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block mb-1 font-semibold text-gray-700">Password</label>
+            <input
+              id="password"
+              type="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+            />
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className="block mb-1 font-semibold text-gray-700">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+            />
+          </div>
+          {error && <div className="text-red-600 text-sm text-center font-medium bg-red-50 border border-red-200 rounded px-3 py-2">{error}</div>}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-walmart-blue hover:bg-blue-800 text-white font-bold rounded-lg shadow transition disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+            disabled={loading}
+            aria-busy={loading}
+          >
+            {loading ? (<span className="flex items-center justify-center"><svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Registering...</span>) : "Register"}
+          </button>
+        </form>
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="mx-3 text-gray-400 text-xs">or</span>
+          <div className="flex-grow border-t border-gray-200"></div>
         </div>
-        <div>
-          <label className="block mb-1 font-medium">Email</label>
-          <input
-            type="email"
-            className="input w-full"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
+        <div className="text-center text-sm text-gray-600">Already have an account?{' '}
+          <Link href="/login" className="text-walmart-blue hover:underline font-semibold">Login</Link>
         </div>
-        <div>
-          <label className="block mb-1 font-medium">Password</label>
-          <input
-            type="password"
-            className="input w-full"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium">Confirm Password</label>
-          <input
-            type="password"
-            className="input w-full"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <div className="text-red-600 text-sm">{error}</div>}
-        <button
-          type="submit"
-          className="btn btn-primary w-full"
-          disabled={loading}
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
-      <div className="text-center mt-4">
-        Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">Login</Link>
       </div>
     </div>
   );
