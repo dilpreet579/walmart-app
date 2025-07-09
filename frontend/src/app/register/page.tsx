@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { executeRecaptcha, verifyCaptchaToken } from "@/utils/recaptcha";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 
 import { useRouter } from "next/navigation";
 
@@ -48,8 +49,13 @@ export default function RegisterPage() {
         const data = await res.json();
         throw new Error(data.message || "Registration failed");
       }
-      // Registration successful, redirect to login
-      router.push("/login");
+      // Registration successful, log in the user automatically
+      try {
+        await useAuthStore.getState().login(email, password);
+        router.push("/"); // Redirect to home page
+      } catch (loginErr: any) {
+        setError(loginErr.message || "Login failed after registration");
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
