@@ -90,6 +90,7 @@ npm run dev               # Next.js dev server
 - `NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...`
 - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY=...`
+- `NEXT_PUBLIC_BOT_DETECTION_API=http://localhost:8000/predict_session`  # Bot detection API endpoint for checkout
 
 ---
 

@@ -13,6 +13,7 @@ import { apiFetch } from '@/utils/api'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+const BOT_DETECTION_API = process.env.NEXT_PUBLIC_BOT_DETECTION_API || 'http://localhost:8000/predict_session'
 
 export default function CheckoutPage() {
   return (
@@ -85,7 +86,7 @@ function Checkout() {
         const botSessionData = getBotSessionData()
         console.log('Bot session data:', botSessionData)
         // TODO: set your Python backend URL
-        const botRes = await fetch('http://localhost:8000/predict_session', {
+        const botRes = await fetch(BOT_DETECTION_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(botSessionData),
