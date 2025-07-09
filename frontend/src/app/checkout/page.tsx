@@ -85,23 +85,23 @@ function Checkout() {
         const botSessionData = getBotSessionData()
         console.log('Bot session data:', botSessionData)
         // TODO: set your Python backend URL
-        // const botRes = await fetch('http://localhost:8000/predict-bot', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(botSessionData),
-        // })
-        // if (botRes.ok) {
-        //   const botPrediction = await botRes.json()
-        //   if (botPrediction.is_bot) {
-        //     setError('Suspicious activity detected. Payment blocked. (' + (botPrediction.risk_factors?.join(', ') || 'Bot detected') + ')')
-        //     setLoading(false)
-        //     return
-        //   }
-        // } else {
-        //   setError('Bot detection service error. Please try again later.')
-        //   setLoading(false)
-        //   return
-        // }
+        const botRes = await fetch('http://localhost:8000/predict_session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(botSessionData),
+        })
+        if (botRes.ok) {
+          const botPrediction = await botRes.json()
+          if (botPrediction.is_bot) {
+            setError('Suspicious activity detected. Payment blocked.' + (Array.isArray(botPrediction.risk_factors) && botPrediction.risk_factors.length > 0 ? ' (' + botPrediction.risk_factors.join(', ') + ')' : ''))
+            setLoading(false) // bot detected, stop processing
+            return
+          }
+        } else {
+          setError('Bot detection service error. Please try again later.')
+          setLoading(false)
+          return
+        }
       } catch (botDetectErr: any) {
         console.error('Error during bot detection:', botDetectErr)
         setError('Error during bot detection: ' + (botDetectErr.message || 'Unknown error'))
