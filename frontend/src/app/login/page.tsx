@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { executeRecaptcha, verifyCaptchaToken } from "@/utils/recaptcha";
 import Link from "next/link";
-
+import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
@@ -14,6 +14,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { fetchUser } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +52,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem("jwt_token", data.token);
+        fetchUser();
         router.push("/");
       } else {
         throw new Error("No token returned from backend");
