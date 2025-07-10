@@ -4,6 +4,16 @@ A full-stack, production-ready Walmart clone e-commerce app with a modern Next.j
 
 ---
 
+## 🤖 Bot Detection Dashboard
+
+Monitor live bot detection analytics for this website at:
+
+[https://bot-detector-model-dashboard.onrender.com/](https://bot-detector-model-dashboard.onrender.com/)
+
+This dashboard provides real-time insights into bot activity and detection results from the checkout and authentication flows of the Walmart E-Commerce App.
+
+---
+
 ## Things to be changed
 
 1. Remove JWT token from localStorage.
