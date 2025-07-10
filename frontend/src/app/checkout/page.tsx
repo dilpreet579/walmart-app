@@ -8,7 +8,7 @@ import { useCartStore } from '../../store/cartStore'
 import { useAddressStore } from '../../store/addressStore'
 import { useOrderStore } from '../../store/orderStore'
 import { executeRecaptcha, verifyCaptchaToken } from '@/utils/recaptcha'
-import { getBotSessionData, resetBotSessionData } from '@/utils/botSessionTracker'
+import { getBotSessionData, resetBotSessionData, setCaptchaSuccess } from '@/utils/botSessionTracker'
 import { apiFetch } from '@/utils/api'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -74,12 +74,17 @@ function Checkout() {
         setError('reCAPTCHA failed. Please try again.')
         setLoading(false)
         return
+      } else {
+        console.log("reCAPTCHA token generated.");
       }
       const captchaOk = await verifyCaptchaToken(recaptchaToken)
       if (!captchaOk) {
         setError('Bot verification failed. Please try again.')
         setLoading(false)
         return
+      } else {
+        console.log("Bot verification passed.");
+        setCaptchaSuccess(true);
       }
       // 0b. Bot session detection (custom ML)
       try {
@@ -96,6 +101,7 @@ function Checkout() {
           if (botPrediction.is_bot) {
             setError('Suspicious activity detected. Payment blocked.' + (Array.isArray(botPrediction.risk_factors) && botPrediction.risk_factors.length > 0 ? ' (' + botPrediction.risk_factors.join(', ') + ')' : ''))
             setLoading(false) // bot detected, stop processing
+            router.push('/payment-failed')
             return
           }
         } else {
