@@ -62,7 +62,7 @@ This dashboard provides real-time insights into bot activity and detection resul
 
 ### 1. Clone the repo
 ```sh
-git clone <your-repo-url>
+git clone https://github.com/dilpreet579/walmart-app.git
 cd Walmart-E-Commerce-App
 ```
 
@@ -146,7 +146,3 @@ Use the following card numbers in Stripe's test mode for payment testing:
 ## Dev TODO
 1. Remove JWT token from localStorage.
 2. Add orders page.
--->
-
-## 📄 License
-MIT
