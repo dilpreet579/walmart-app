@@ -32,7 +32,7 @@ export default function CartPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="container-wrapper section text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">
         <h2 className="mb-4">Please log in to view your cart</h2>
         <Link href="/login" className="btn-primary inline-block">Login</Link>
       </div>
@@ -40,17 +40,17 @@ export default function CartPage() {
   }
 
   if (loading) {
-    return <div className="container-wrapper section text-center">Loading cart...</div>
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4">Loading cart...</div>
   }
 
   if (error) {
-    return <div className="container-wrapper section text-center text-red-600">{error}</div>
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 text-red-600">{error}</div>
   }
 
   if (items.length === 0) {
     return (
-      <div className="container-wrapper section">
-        <div className="text-center">
+      <div className="flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 px-4">
+        <div className="py-20 text-center">
           <h2>Your cart is empty</h2>
           <p className="mb-8">Looks like you haven't added anything to your cart yet.</p>
           <Link href="/" className="btn-primary inline-block">
@@ -62,9 +62,9 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-10 px-2 flex justify-center">
+    <div className="bg-gradient-to-br from-gray-50 to-blue-50 px-2 flex justify-center">
       <div className="w-full max-w-6xl">
-        <h1 className="text-3xl font-extrabold text-walmart-blue tracking-tight mb-8 text-center">Shopping Cart</h1>
+        <h1 className="pt-20 text-3xl font-extrabold text-walmart-blue tracking-tight mb-8 text-center">Shopping Cart</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Cart Items */}
           <div className="lg:col-span-2">
