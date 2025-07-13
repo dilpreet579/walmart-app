@@ -39,7 +39,7 @@ export default function CategoryPage({ category }: CategoryPageProps) {
   }
 
   return (
-    <div className="container-wrapper section">
+    <div className="container-wrapper section py-20">
       <h1 className="text-2xl font-bold mb-6">{category}</h1>
       {filteredProducts.length === 0 ? (
         <div className="text-center py-8">

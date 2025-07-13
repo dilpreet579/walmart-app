@@ -33,7 +33,7 @@ export default function Deals() {
   }
 
   return (
-    <div className="container-wrapper section">
+    <div className="container-wrapper section py-20">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Today's Deals</h1>
         <p className="text-gray-600">{discountedProducts.length} deals available</p>

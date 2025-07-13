@@ -166,7 +166,7 @@ function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-20 flex items-center justify-center">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 md:p-12">
         <h1 className="text-3xl font-extrabold text-walmart-blue tracking-tight mb-8 text-center">Checkout</h1>
         {error && <div className="text-red-600 text-center mb-4 font-medium bg-red-50 border border-red-200 rounded px-3 py-2">{error}</div>}
