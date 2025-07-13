@@ -16,7 +16,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
   }, [])
   return (
     <>
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-walmart-blue to-green-700"><Navbar /></div>
+      <div className="fixed w-full top-0 z-50 bg-gradient-to-r from-walmart-blue to-blue-700"><Navbar /></div>
       <main className="flex-grow">{children}</main>
       <Footer />
     </>
