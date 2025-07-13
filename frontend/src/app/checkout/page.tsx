@@ -90,7 +90,6 @@ function Checkout() {
       try {
         const botSessionData = getBotSessionData()
         console.log('Bot session data:', botSessionData)
-        // TODO: set your Python backend URL
         const botRes = await fetch(BOT_DETECTION_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -98,6 +97,13 @@ function Checkout() {
         })
         if (botRes.ok) {
           const botPrediction = await botRes.json()
+          const typing_speed_cpm = botSessionData.typing_speed_cpm;
+          if(typing_speed_cpm > 300){
+            setError('Suspicious activity detected. Payment blocked.')
+            setLoading(false) // bot detected, stop processing
+            router.push('/payment-failed')
+            return
+          }
           if (botPrediction.is_bot) {
             setError('Suspicious activity detected. Payment blocked.' + (Array.isArray(botPrediction.risk_factors) && botPrediction.risk_factors.length > 0 ? ' (' + botPrediction.risk_factors.join(', ') + ')' : ''))
             setLoading(false) // bot detected, stop processing
