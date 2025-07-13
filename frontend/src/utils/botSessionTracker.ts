@@ -1,7 +1,9 @@
 // Improved bot session tracker for Walmart E-Commerce App
-// Now produces minimal backend payload
+// Now uses enhanced clickPatternScore module
 
 import { nanoid } from 'nanoid'
+import { calculateClickPatternScore, trackClickEvents } from './clickPatternScore'
+import type { ClickEvent } from './clickPatternScore'
 
 // Final data payload structure for backend
 export interface BotSessionPayload {
@@ -28,12 +30,12 @@ let keyCount = 0
 let firstKeyTime: number | null = null
 let lastKeyTime: number | null = null
 
-let clickTimes: number[] = []
+let clickEvents: ClickEvent[] = []
 
 let scrollEvents = 0
 
 let formStartTime: number | null = null
-let formEndTime: number | null = null
+let lastFormInteractionTime: number | null = null
 
 let captchaSuccess = 0
 
@@ -44,21 +46,6 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null
 function scheduleSave() {
   if (saveTimeout) clearTimeout(saveTimeout)
   saveTimeout = setTimeout(() => saveData(), 500)
-}
-
-function calculateClickPatternScore(intervals: number[]): number {
-  if (intervals.length === 0) return 1
-
-  const avg = intervals.reduce((sum, val) => sum + val, 0) / intervals.length
-  const variance = intervals.reduce((sum, val) => sum + (val - avg) ** 2, 0) / intervals.length
-
-  // Inverted scale: Higher avg/variance → more human-like
-  const avgScore = avg < 200 ? 0 : avg > 1000 ? 1 : (avg - 200) / 800
-  const varianceScore = variance < 2000 ? 0 : variance > 10000 ? 1 : (variance - 2000) / 8000
-
-  const combinedScore = (avgScore * 0.6) + (varianceScore * 0.4)
-
-  return Math.round(combinedScore * 100) / 100 // two decimal places
 }
 
 function getScrollBehavior(): number {
@@ -76,12 +63,11 @@ function saveData() {
   const typingDurationMin = firstKeyTime && lastKeyTime ? (lastKeyTime - firstKeyTime) / 60000 : 0
   const typingSpeed = typingDurationMin > 0 ? keyCount / typingDurationMin : 0
 
-  const clickIntervals = clickTimes.length > 1
-    ? clickTimes.slice(1).map((t, i) => t - clickTimes[i])
-    : []
-  const clickPatternScore = calculateClickPatternScore(clickIntervals)
+  const clickPatternScore = calculateClickPatternScore(clickEvents)
 
-  const formFillTime = formStartTime && formEndTime ? (formEndTime - formStartTime) / 1000 : 0
+  const formFillTime = formStartTime && lastFormInteractionTime
+    ? (lastFormInteractionTime - formStartTime) / 1000
+    : 0
 
   const data: BotSessionPayload = {
     mouse_movement_units: parseFloat((mouseUnits/100).toFixed(1)),
@@ -117,10 +103,7 @@ export function initBotSessionTracking() {
     }
   })
 
-  window.addEventListener('click', () => {
-    clickTimes.push(Date.now())
-    scheduleSave()
-  })
+  trackClickEvents(clickEvents)
 
   window.addEventListener('scroll', () => {
     scrollEvents++
@@ -129,14 +112,20 @@ export function initBotSessionTracking() {
 
   document.addEventListener('focusin', (e) => {
     const tagName = (e.target as HTMLElement).tagName
-    if (!formStartTime && ['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) {
-      formStartTime = Date.now()
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) {
+      const now = Date.now()
+      if (!formStartTime) formStartTime = now
+      lastFormInteractionTime = now
+      scheduleSave()
     }
   })
 
-  document.addEventListener('submit', () => {
-    formEndTime = Date.now()
-    scheduleSave()
+  document.addEventListener('input', (e) => {
+    const tagName = (e.target as HTMLElement).tagName
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) {
+      lastFormInteractionTime = Date.now()
+      scheduleSave()
+    }
   })
 
   window.addEventListener('beforeunload', saveData)
@@ -183,11 +172,11 @@ export function resetBotSessionData() {
   firstKeyTime = null
   lastKeyTime = null
 
-  clickTimes = []
+  clickEvents = []
   scrollEvents = 0
 
   formStartTime = null
-  formEndTime = null
+  lastFormInteractionTime = null
 
   captchaSuccess = 0
 
