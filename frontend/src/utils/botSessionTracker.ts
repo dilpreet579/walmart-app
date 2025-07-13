@@ -34,8 +34,9 @@ let clickEvents: ClickEvent[] = []
 
 let scrollEvents = 0
 
-let formStartTime: number | null = null
-let lastFormInteractionTime: number | null = null
+let currentFormStart: number | null = null
+let totalFormFillTime = 0
+let formInteractionTimeout: ReturnType<typeof setTimeout> | null = null
 
 let captchaSuccess = 0
 
@@ -55,6 +56,40 @@ function getScrollBehavior(): number {
   return 0                        // none
 }
 
+function startFormTimer(now: number) {
+  if (!currentFormStart) {
+    currentFormStart = now
+  }
+  resetFormInteractionTimeout(now)
+}
+
+function endFormTimer(now: number) {
+  if (currentFormStart) {
+    totalFormFillTime += now - currentFormStart
+    currentFormStart = null
+  }
+  if (formInteractionTimeout) clearTimeout(formInteractionTimeout)
+  formInteractionTimeout = null
+}
+
+function resetFormInteractionTimeout(now: number) {
+  if (formInteractionTimeout) clearTimeout(formInteractionTimeout)
+  formInteractionTimeout = setTimeout(() => {
+    endFormTimer(now)
+  }, 30000) // Ends session if no activity for 30s
+}
+
+function getFormFillDuration(): number {
+  return totalFormFillTime / 1000
+}
+
+function resetFormTracking() {
+  currentFormStart = null
+  totalFormFillTime = 0
+  if (formInteractionTimeout) clearTimeout(formInteractionTimeout)
+  formInteractionTimeout = null
+}
+
 // ------------------- Core Save -------------------
 
 function saveData() {
@@ -65,9 +100,7 @@ function saveData() {
 
   const clickPatternScore = calculateClickPatternScore(clickEvents)
 
-  const formFillTime = formStartTime && lastFormInteractionTime
-    ? (lastFormInteractionTime - formStartTime) / 1000
-    : 0
+  const formFillTime = getFormFillDuration()
 
   const data: BotSessionPayload = {
     mouse_movement_units: parseFloat((mouseUnits/100).toFixed(1)),
@@ -110,25 +143,31 @@ export function initBotSessionTracking() {
     scheduleSave()
   })
 
-  document.addEventListener('focusin', (e) => {
+  const formTags = ['INPUT', 'TEXTAREA', 'SELECT']
+
+  const trackFormInteraction = (e: Event) => {
     const tagName = (e.target as HTMLElement).tagName
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) {
+    if (formTags.includes(tagName)) {
       const now = Date.now()
-      if (!formStartTime) formStartTime = now
-      lastFormInteractionTime = now
+      startFormTimer(now)
       scheduleSave()
     }
+  }
+
+  document.addEventListener('focusin', trackFormInteraction)
+  document.addEventListener('input', trackFormInteraction)
+
+  document.addEventListener('submit', () => {
+    const now = Date.now()
+    endFormTimer(now)
+    scheduleSave()
   })
 
-  document.addEventListener('input', (e) => {
-    const tagName = (e.target as HTMLElement).tagName
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tagName)) {
-      lastFormInteractionTime = Date.now()
-      scheduleSave()
-    }
+  window.addEventListener('beforeunload', () => {
+    const now = Date.now()
+    endFormTimer(now)
+    saveData()
   })
-
-  window.addEventListener('beforeunload', saveData)
 
   saveData() // Initial save
 }
@@ -175,8 +214,7 @@ export function resetBotSessionData() {
   clickEvents = []
   scrollEvents = 0
 
-  formStartTime = null
-  lastFormInteractionTime = null
+  resetFormTracking()
 
   captchaSuccess = 0
 
