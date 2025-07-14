@@ -41,7 +41,7 @@ const footerLinks = {
     // { name: 'Money Services', href: '/money-services' },
     // { name: 'Gift Cards', href: '/gift-cards' },
     // { name: 'Protection Plans', href: '/protection-plans' },
-    { name: 'Walmart+' },
+    { name: 'MegaMart+' },
     { name: 'Pharmacy' },
     { name: 'Money Services' },
     { name: 'Gift Cards' },
@@ -142,7 +142,7 @@ export default function Footer() {
               </Link>
             </div>
             <p className="px-6 mt-8 md:mt-0 text-base text-gray-400 md:order-1">
-              &copy; {new Date().getFullYear()} Walmart Clone. All rights reserved.
+              &copy; {new Date().getFullYear()} MegaMart Clone. All rights reserved.
             </p>
           </div>
         </div>
