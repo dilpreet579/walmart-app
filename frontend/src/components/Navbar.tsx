@@ -5,7 +5,6 @@ import { ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outli
 import { useCartStore } from '../store/cartStore'
 import { useAuthStore } from '../store/authStore'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
@@ -56,8 +55,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/">
             <span className="flex-shrink-0 flex items-center gap-2">
-              <Image src="/icons/spark-icon.svg" alt="Spark Icon" width={24} height={24} className="h-6 w-6" />
-              <span className="text-white text-2xl font-extrabold cursor-pointer tracking-tight">Walmart</span>
+              <span className="text-white text-2xl font-extrabold cursor-pointer tracking-tight">MegaMart</span>
             </span>
           </Link>
 
@@ -91,7 +89,7 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/80 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-walmart-yellow focus:border-walmart-yellow shadow-sm placeholder-gray-400 text-gray-800 transition"
-                  placeholder="Search everything at Walmart online and in store"
+                  placeholder="Search everything at MegaMart online and in store"
                 />
               </div>
             </form>
@@ -146,7 +144,7 @@ export default function Navbar() {
       <div className={`fixed top-0 left-0 right-0 z-50 bg-white rounded-b-2xl shadow-2xl border-b border-gray-200 px-6 pt-4 pb-8 transition-transform duration-300 ${mobileMenuOpen ? 'translate-y-0' : '-translate-y-full'} md:hidden`}> 
         <div className="flex items-center justify-between mb-6">
           <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-            <span className="text-walmart-blue text-2xl font-extrabold cursor-pointer tracking-tight">Walmart</span>
+            <span className="text-walmart-blue text-2xl font-extrabold cursor-pointer tracking-tight">MegaMart</span>
           </Link>
           <button className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-walmart-yellow" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
             <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">

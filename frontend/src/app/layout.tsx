@@ -3,8 +3,8 @@ import './globals.css'
 import ClientWrapper from '../components/ClientWrapper'
 
 export const metadata = {
-  title: 'Walmart Clone - Save Money. Live Better.',
-  description: 'Shop online for electronics, home, groceries, and more at Walmart Clone.',
+  title: 'MegaMart - Save Money. Live Better.',
+  description: 'Shop online for electronics, home, groceries, and more at MegaMart.',
 }
 
 export default function RootLayout({
